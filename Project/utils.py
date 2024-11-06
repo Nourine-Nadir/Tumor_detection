@@ -21,6 +21,7 @@ def load_images_from_folders(root_folder,
                              output_folder,
                              save_files= False,
                              target_size=(128, 128)):
+    print('Loading from folders ...')
     images = []
     images_dict = {}
     if save_files:
@@ -41,12 +42,13 @@ def load_images_from_folders(root_folder,
                 img_path = os.path.join(root, file)
                 try:
                     with Image.open(img_path) as img:
-                        img_resized = img.convert('RGB').resize(target_size)
+                        img_resized = img.convert('L').resize(target_size)
                         if save_files:
                             output_path = os.path.join(label_output_folder, file)
                             img_resized.save(output_path)
 
                         img_array = np.array(img_resized)
+                        # print(img_array.shape)
                         images.append(img_array)
                         images_dict[label].append(img_array)
 
@@ -61,9 +63,8 @@ def load_images_from_folders2(root_folder,
                              ):
     images = []
     images_dict = {}
-
+    print(f'Loading from folders ... {root_folder}')
     for root, dirs, files in os.walk(root_folder):
-
         label = os.path.basename(root)
         if label and label not in images_dict:  # Only add non-empty labels
             print(f'Procesing {label}')

@@ -8,26 +8,15 @@ from typing import Tuple
 def evaluate_model(net,
                    features: np.ndarray,
                    labels: np.ndarray,
+                   train_loss
                    ) -> Tuple[float, float]:
-    """
-    Evaluate the neural network performance using various metrics
 
-    Args:
-        net: Trained Naive_net model
-        features: Input features
-        labels: True labels
-        test_split: Fraction of data to use for testing
-
-    Returns:
-        tuple of (accuracy, loss)
-    """
     # Convert to tensors
     features = T.tensor(features, device=net.device, dtype=T.float32)
     labels = T.tensor(labels, device=net.device, dtype=T.float32)
 
 
 
-    # Randomly shuffle indices
 
 
 
@@ -44,15 +33,8 @@ def evaluate_model(net,
         accuracy = np.mean(pred_labels == labels_1D)
 
         # Calculate loss
-        n_classes = predictions.shape[1]
-        print(predictions.shape, predictions.dtype)
-        print(labels.shape, labels.dtype)
         loss = net.loss(predictions, labels).item()
 
-        # Convert to numpy for sklearn metrics
-        # pred_labels = pred_labels.cpu().numpy()
-        true_labels = labels.cpu().numpy()
-        predictions= predictions.cpu().numpy()
 
         # Print detailed classification report
 
@@ -66,14 +48,9 @@ def evaluate_model(net,
         plt.xlabel('Predicted Label')
         plt.show()
 
-        # Plot prediction distribution
-        plt.figure(figsize=(10, 5))
-        plt.hist(pred_labels, bins=n_classes, alpha=0.5, label='Predictions')
-        plt.hist(true_labels, bins=n_classes, alpha=0.5, label='True Labels')
-        plt.title('Distribution of Predictions vs True Labels')
-        plt.xlabel('Class')
-        plt.ylabel('Count')
-        plt.legend()
+        plt.plot(train_loss)
         plt.show()
+
+
 
     return accuracy, loss

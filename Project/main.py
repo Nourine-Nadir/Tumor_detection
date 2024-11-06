@@ -15,7 +15,7 @@ with (open('params.json', 'r') as f):
 
 
 if __name__ == '__main__':
-    features, labels = extract_features(PARTS,
+    X_train, X_test, y_train, y_test = extract_features(PARTS,
                                         _nb_features,
                                         train_ROOT_FOLDER,
                                         train_TARGET_FOLDER,
@@ -23,9 +23,11 @@ if __name__ == '__main__':
                                         SAVE_FILE
                      )
 
-    print(f'features : {features.shape}')
-    trained_net = train(features=features,
-          labels=labels,
+    print(f'-------TRAIN------\nfeatures : {X_train.shape}')
+    print(f'labels : {y_train.shape}')
+
+    trained_net, train_loss = train(features=X_train,
+          labels=y_train,
           lr=_lr,
           fc1_dims=_fc1_dims,
           fc2_dims=_fc2_dims,
@@ -33,14 +35,10 @@ if __name__ == '__main__':
           n_epochs=_epochs,
           batch_size=_batch_size)
 
-    features, labels = extract_features(PARTS,
-                                        _nb_features,
-                                        test_ROOT_FOLDER,
-                                        test_TARGET_FOLDER,
-                                        TARGET_SIZE,
-                                        SAVE_FILE
-                                        )
-    accuracy, loss = evaluate_model(trained_net, features, labels)
+    print(f'\n-------TEST------\nfeatures : {X_test.shape}')
+    print(f'labels : {y_test.shape}')
+
+    accuracy, loss = evaluate_model(trained_net, X_test, y_test, train_loss)
     print(f"\nOverall Test Results:")
     print(f"Accuracy: {accuracy:.4f}")
     print(f"Loss: {loss:.4f}")

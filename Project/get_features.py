@@ -1,7 +1,7 @@
 # IMPORT LIBRARIES
 from utils import *
 from engine import Engine
-
+from sklearn.model_selection import train_test_split
 
 # LOAD images from folders
 def extract_features(_parts,
@@ -10,16 +10,16 @@ def extract_features(_parts,
                      _target_folder,
                      _target_size,
                      _save_file,
-                     display=False):
+                     display=True):
 
+    #
+    images, images_dict = load_images_from_folders(root_folder= _root_folder,
+                                                   output_folder= _target_folder,
+                                                   target_size=_target_size,
+                                                   save_files=_save_file)
 
-    # images, images_dict = load_images_from_folders(root_folder= _root_folder,
-    #                                                output_folder= _target_folder,
-    #                                                target_size=_target_size,
-    #                                                save_files=_save_file)
-
-    images, images_dict = load_images_from_folders2(root_folder= _target_folder,
-                                                   )
+    # images, images_dict = load_images_from_folders2(root_folder= _target_folder,
+    #                                                )
 
 
     engine = Engine(root_folder= _root_folder,
@@ -32,10 +32,17 @@ def extract_features(_parts,
 
     nb_imgs = 3
     if display:
-        display_images(splitted_images[:nb_imgs*4],rows=len(images[:nb_imgs])*2,cols=2)
+        display_images(splitted_images[:nb_imgs*9],rows=len(images[:nb_imgs])*3,cols=3)
 
     hists = engine.compute_hist(splitted_images, nb_features=_nb_features)
     features = engine.get_features_from_hists(hists, parts=_parts)
 
     normalized_features = normalize_features(features)
-    return normalized_features, labels
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        normalized_features, labels,
+        test_size=0.2,
+         random_state=42,
+        shuffle=True
+    )
+    return X_train, X_test, y_train, y_test

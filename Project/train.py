@@ -23,7 +23,7 @@ def train(features,
     features = T.tensor(features, device=net.device, dtype=T.float32)  # Shape: (968, 1)
     labels = T.tensor(labels, device=net.device, dtype=T.float32)
 
-
+    losses = []
     for epoch in range(n_epochs):
             total_loss = 0
             # Create data loader
@@ -41,7 +41,7 @@ def train(features,
                 predictions = net(batch_features)
 
                 loss = net.loss(predictions, batch_labels)
-
+                losses.append(loss.item())
                 # Backward pass
                 net.optimizer.zero_grad()
                 loss.backward()
@@ -49,9 +49,9 @@ def train(features,
 
                 total_loss += loss.item()
 
-            if (epoch + 1) % 20 == 0:
+            if (epoch + 1) % 5 == 0:
 
-                print(f'Epoch {epoch + 1}/{n_epochs}, lr : {net.get_lr():.5f} Loss: {total_loss:.4f}')
+                print(f'Epoch {epoch + 1}/{n_epochs}, lr : {net.get_lr():.5f} Loss: {loss:.4f}')
                 net.lr_decay()
 
-    return net
+    return net, losses

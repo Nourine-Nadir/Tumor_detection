@@ -15,7 +15,7 @@ class Engine():
     def split_image(self, image, parts=2):
         images = []
         # Get height and width of the image
-        height, width = image.shape[:2]
+        height, width = image.shape
         # Compute new_height and new_width
         new_height, new_width = height // parts, width // parts
 
@@ -25,13 +25,12 @@ class Engine():
             for j in range(parts):
                 img = image[i * new_height:(i + 1) * new_height, j * new_width:(j + 1) * new_width]
                 images.append(img)
-
         return images
 
     def split_images(self, images, parts=2):
         splitted_images = []
         for img in images:
-            img = np.squeeze(img)
+
             splitted_images.extend(self.split_image(img, parts=parts))
 
         return splitted_images
@@ -39,8 +38,8 @@ class Engine():
     def compute_hist(self, images, nb_features):
         hists = []
         for i, img_array in enumerate(images):
-            img_gray = np.mean(img_array, axis=-1).astype(np.uint8)
-            img = img_gray.flatten()
+            # img_gray = np.mean(img_array, axis=-1).astype(np.uint8)
+            img = img_array.flatten()
 
             hists.extend([np.histogram(img, bins=nb_features)])
 

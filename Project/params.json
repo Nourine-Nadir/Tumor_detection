@@ -10,10 +10,10 @@
   "parameters": {
     "parts":3,
     "nb_features": 64,
-    "train_root_folder": "data_set/Training/",
-    "train_target_folder": "data_set/Training_resized/",
-    "test_root_folder": "data_set/Testing/",
-    "test_target_folder": "data_set/Testing_resized/",
+    "train_root_folder": "Clean_Data/",
+    "train_target_folder": "resized_Data/",
+    "test_root_folder": "...",
+    "test_target_folder": "...",
     "target_size": [128,128],
     "save_file": true,
     "lr": 1e-4,
@@ -22,7 +22,7 @@
     "fc2_dims": 512,
     "fc3_dims": 256,
     "epochs": 500,
-    "batch_size": 1024
+    "batch_size": 2048
 
 
   }
