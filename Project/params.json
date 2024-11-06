@@ -1,0 +1,29 @@
+{
+  "name": "tp1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "private": true,
+  "parameters": {
+    "parts":3,
+    "nb_features": 64,
+    "train_root_folder": "data_set/Training/",
+    "train_target_folder": "data_set/Training_resized/",
+    "test_root_folder": "data_set/Testing/",
+    "test_target_folder": "data_set/Testing_resized/",
+    "target_size": [128,128],
+    "save_file": true,
+    "lr": 1e-4,
+
+    "fc1_dims": 1024,
+    "fc2_dims": 512,
+    "fc3_dims": 256,
+    "epochs": 500,
+    "batch_size": 1024
+
+
+  }
+}
