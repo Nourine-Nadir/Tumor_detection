@@ -33,7 +33,7 @@ class Naive_net(nn.Module):
         self.optimizer = T.optim.Adam(self.parameters(), lr=lr)
         self.scheduler = T.optim.lr_scheduler.LambdaLR(
             self.optimizer,
-            lr_lambda=lambda epoch: max(0.99 ** epoch, (lr*1e-1 / lr))
+            lr_lambda=lambda epoch: max(0.90 ** epoch, (lr*1e-1 / lr))
         )
 
         self.device = T.device('cuda' if T.cuda.is_available() else 'cpu')

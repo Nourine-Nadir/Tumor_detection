@@ -10,19 +10,22 @@
   "parameters": {
     "parts":3,
     "nb_features": 64,
-    "train_root_folder": "Clean_Data/",
-    "train_target_folder": "resized_Data/",
-    "test_root_folder": "...",
-    "test_target_folder": "...",
+
+
+    "root_folder": "Clean_Data/",
+    "target_folder": "resized_Data/",
+    "load_and_resize": false,
+    "display_images": false,
     "target_size": [128,128],
     "save_file": true,
-    "lr": 1e-4,
 
+
+    "lr": 1e-4,
     "fc1_dims": 1024,
     "fc2_dims": 512,
     "fc3_dims": 256,
     "epochs": 500,
-    "batch_size": 2048
+    "batch_size": 256
 
 
   }

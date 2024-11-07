@@ -1,6 +1,6 @@
 import torch as T
 import numpy as np
-from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
 import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import Tuple
@@ -30,7 +30,8 @@ def evaluate_model(net,
 
         # Calculate accuracy
 
-        accuracy = np.mean(pred_labels == labels_1D)
+        # accuracy = np.mean(pred_labels == labels_1D)
+        accuracy = accuracy_score(pred_labels, labels_1D)
 
         # Calculate loss
         loss = net.loss(predictions, labels).item()
@@ -43,7 +44,7 @@ def evaluate_model(net,
         cm = confusion_matrix(labels_1D, pred_labels)
         plt.figure(figsize=(10, 8))
         sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
-        plt.title('Confusion Matrix')
+        plt.title(f'Confusion Matrix, Accuracy = {accuracy:.4f}')
         plt.ylabel('True Label')
         plt.xlabel('Predicted Label')
         plt.show()

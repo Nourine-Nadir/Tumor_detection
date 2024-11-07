@@ -38,7 +38,6 @@ class Engine():
     def compute_hist(self, images, nb_features):
         hists = []
         for i, img_array in enumerate(images):
-            # img_gray = np.mean(img_array, axis=-1).astype(np.uint8)
             img = img_array.flatten()
 
             hists.extend([np.histogram(img, bins=nb_features)])

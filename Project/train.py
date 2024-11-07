@@ -41,7 +41,6 @@ def train(features,
                 predictions = net(batch_features)
 
                 loss = net.loss(predictions, batch_labels)
-                losses.append(loss.item())
                 # Backward pass
                 net.optimizer.zero_grad()
                 loss.backward()
@@ -49,7 +48,8 @@ def train(features,
 
                 total_loss += loss.item()
 
-            if (epoch + 1) % 5 == 0:
+            losses.append(total_loss)
+            if (epoch + 1) % 10 == 0:
 
                 print(f'Epoch {epoch + 1}/{n_epochs}, lr : {net.get_lr():.5f} Loss: {loss:.4f}')
                 net.lr_decay()

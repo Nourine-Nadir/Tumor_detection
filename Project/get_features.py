@@ -10,16 +10,18 @@ def extract_features(_parts,
                      _target_folder,
                      _target_size,
                      _save_file,
-                     display=True):
+                     load_and_resize=True,
+                     display=False):
 
-    #
-    images, images_dict = load_images_from_folders(root_folder= _root_folder,
-                                                   output_folder= _target_folder,
-                                                   target_size=_target_size,
-                                                   save_files=_save_file)
-
-    # images, images_dict = load_images_from_folders2(root_folder= _target_folder,
-    #                                                )
+    if load_and_resize:
+        print('load and resize')
+        images, images_dict = load_images_from_folders(root_folder= _root_folder,
+                                                       output_folder= _target_folder,
+                                                       target_size=_target_size,
+                                                       save_files=_save_file)
+    else:
+        images, images_dict = load_images_from_folders2(root_folder= _target_folder,
+                                                   )
 
 
     engine = Engine(root_folder= _root_folder,
@@ -32,7 +34,7 @@ def extract_features(_parts,
 
     nb_imgs = 3
     if display:
-        display_images(splitted_images[:nb_imgs*9],rows=len(images[:nb_imgs])*3,cols=3)
+        display_images(splitted_images[:nb_imgs*9],rows=len(images[:nb_imgs])*3,cols=_parts)
 
     hists = engine.compute_hist(splitted_images, nb_features=_nb_features)
     features = engine.get_features_from_hists(hists, parts=_parts)

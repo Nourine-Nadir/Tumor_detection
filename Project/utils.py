@@ -8,7 +8,7 @@ from sklearn.preprocessing import StandardScaler
 def load_images_from_folder(folder_path):
     images = []
     for filename in os.listdir(folder_path):
-        if filename.endswith((".png", ".jpg", ".jpeg", "BMP")):  # Add or remove file extensions as needed
+        if filename.endswith((".png", ".jpg", ".jpeg", ".BMP",".tif")):  # Add or remove file extensions as needed
             img_path = os.path.join(folder_path, filename)
             try:
                 with Image.open(img_path) as img:
@@ -37,7 +37,7 @@ def load_images_from_folders(root_folder,
                 os.makedirs(label_output_folder, exist_ok=True)
         for file in files:
             # Check if the file is an image by its extension
-            if file.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif')):
+            if file.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif','.tif')):
                 # Get the full path of the image file
                 img_path = os.path.join(root, file)
                 try:
@@ -72,7 +72,7 @@ def load_images_from_folders2(root_folder,
 
         for file in files:
             # Check if the file is an image by its extension
-            if file.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif')):
+            if file.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif','.tif')):
                 # Get the full path of the image file
                 img_path = os.path.join(root, file)
                 try:

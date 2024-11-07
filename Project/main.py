@@ -6,8 +6,8 @@ import json
 with (open('params.json', 'r') as f):
     params = json.load(f)["parameters"]
 
-    PARTS,_nb_features, train_ROOT_FOLDER, train_TARGET_FOLDER,\
-     test_ROOT_FOLDER, test_TARGET_FOLDER, TARGET_SIZE, SAVE_FILE, \
+    PARTS,_nb_features, ROOT_FOLDER, TARGET_FOLDER,\
+     _load_and_resize,_display,  TARGET_SIZE, SAVE_FILE, \
     _lr, _fc1_dims, _fc2_dims, _fc3_dims, _epochs, _batch_size\
     =(params[key] for key in
      list(params.keys())
@@ -15,12 +15,16 @@ with (open('params.json', 'r') as f):
 
 
 if __name__ == '__main__':
-    X_train, X_test, y_train, y_test = extract_features(PARTS,
-                                        _nb_features,
-                                        train_ROOT_FOLDER,
-                                        train_TARGET_FOLDER,
-                                        TARGET_SIZE,
-                                        SAVE_FILE
+    X_train, X_test, y_train, y_test = extract_features(_parts=PARTS,
+                                        _nb_features=_nb_features,
+                                        _root_folder=ROOT_FOLDER,
+                                        _target_folder=TARGET_FOLDER,
+                                        _target_size=TARGET_SIZE,
+                                        _save_file=SAVE_FILE,
+                                        load_and_resize=_load_and_resize,
+                                        display=_display,
+
+
                      )
 
     print(f'-------TRAIN------\nfeatures : {X_train.shape}')
