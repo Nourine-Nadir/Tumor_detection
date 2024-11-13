@@ -1,0 +1,32 @@
+{
+  "name": "tp1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "private": true,
+  "parameters": {
+    "parts":3,
+    "nb_features": 64,
+
+
+    "root_folder": "Clean_Data/",
+    "target_folder": "resized_Data/",
+    "load_and_resize": false,
+    "display_images": false,
+    "target_size": [128,128],
+    "save_file": false,
+
+
+    "lr": 1e-4,
+    "fc1_dims": 1024,
+    "fc2_dims": 512,
+    "fc3_dims": 256,
+    "epochs": 50,
+    "batch_size": 512
+
+
+  }
+}
