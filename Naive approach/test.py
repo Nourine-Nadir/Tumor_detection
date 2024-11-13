@@ -41,7 +41,7 @@ def evaluate_model(net,
         # Calculate roc_auc_score
         roc_auc = roc_auc_score(labels_1D, pred_labels, average='macro')
 
-    
+
 
         # Create and plot confusion matrix
         cm = confusion_matrix(labels_1D, pred_labels)
@@ -50,9 +50,11 @@ def evaluate_model(net,
         plt.title(f'Confusion Matrix, Accuracy = {accuracy:.4f}')
         plt.ylabel('True Label')
         plt.xlabel('Predicted Label')
+        plt.savefig('confusion_matrix.png')
         plt.show()
 
         plt.plot(train_loss)
+        plt.savefig('loss.png')
         plt.show()
 
     print(f"\nOverall Test Results:")

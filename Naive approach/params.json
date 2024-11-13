@@ -24,7 +24,7 @@
     "fc1_dims": 1024,
     "fc2_dims": 512,
     "fc3_dims": 256,
-    "epochs": 50,
+    "epochs": 100,
     "batch_size": 512
 
 
