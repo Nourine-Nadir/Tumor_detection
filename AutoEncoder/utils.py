@@ -48,7 +48,6 @@ def load_images_from_folders(root_folder,
                             img_resized.save(output_path)
 
                         img_array = np.array(img_resized)
-                        # print(img_array.shape)
                         images.append(img_array)
                         images_dict[label].append(img_array)
 
@@ -87,7 +86,7 @@ def load_images_from_folders2(root_folder,
                     print(f"Error loading image: {file}")
 
 
-    return images, images_dict
+    return np.array(images), images_dict
 
 
 def display_images(images, rows=1, cols=1):

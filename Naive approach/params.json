@@ -12,8 +12,8 @@
     "nb_features": 64,
 
 
-    "root_folder": "Clean_Data/",
-    "target_folder": "resized_Data/",
+    "root_folder": "../Clean_Data/",
+    "target_folder": "../resized_Data/",
     "load_and_resize": false,
     "display_images": false,
     "target_size": [128,128],
