@@ -39,10 +39,5 @@ if __name__ == '__main__':
           n_epochs=_epochs,
           batch_size=_batch_size)
 
-    print(f'\n-------TEST------\nfeatures : {X_test.shape}')
-    print(f'labels : {y_test.shape}')
-
-    accuracy, loss = evaluate_model(trained_net, X_test, y_test, train_loss)
-    print(f"\nOverall Test Results:")
-    print(f"Accuracy: {accuracy:.4f}")
-    print(f"Loss: {loss:.4f}")
+    print(f'\n-------TEST------\nfeatures : {X_test.shape}\nlabels : {y_test.shape}')
+    accuracy = evaluate_model(trained_net, X_test, y_test, train_loss)

@@ -62,3 +62,5 @@ class Naive_net(nn.Module):
 
     def get_lr(self):
         return self.scheduler.get_last_lr()[0]
+
+

@@ -1,6 +1,6 @@
 import torch as T
 import numpy as np
-from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
+from sklearn.metrics import confusion_matrix, f1_score, accuracy_score, roc_auc_score, roc_curve, auc
 import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import Tuple
@@ -30,14 +30,17 @@ def evaluate_model(net,
 
         # Calculate accuracy
 
-        # accuracy = np.mean(pred_labels == labels_1D)
-        accuracy = accuracy_score(pred_labels, labels_1D)
+        accuracy = accuracy_score(labels_1D, pred_labels)
 
         # Calculate loss
-        loss = net.loss(predictions, labels).item()
+        loss = net.loss(labels, predictions).item()
 
+        # Calculate f1score
+        f1score = f1_score(labels_1D, pred_labels, average='macro')
 
-        # Print detailed classification report
+        # Calculate roc_auc_score
+        roc_auc = roc_auc_score(labels_1D, pred_labels, average='macro')
+
 
 
         # Create and plot confusion matrix
@@ -47,11 +50,16 @@ def evaluate_model(net,
         plt.title(f'Confusion Matrix, Accuracy = {accuracy:.4f}')
         plt.ylabel('True Label')
         plt.xlabel('Predicted Label')
+        plt.savefig('confusion_matrix.png')
         plt.show()
 
         plt.plot(train_loss)
+        plt.savefig('loss.png')
         plt.show()
 
-
-
-    return accuracy, loss
+    print(f"\nOverall Test Results:")
+    print(f"Loss: {loss:.4f}")
+    print(f"Accuracy: {accuracy:.4f}")
+    print(f"f1_Score: {f1score:.4f}")
+    print(f"roc_auc_score: {roc_auc:.4f}")
+    return accuracy
