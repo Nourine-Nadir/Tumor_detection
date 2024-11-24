@@ -2,6 +2,7 @@ import torch as T
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
+import os
 def weights_init_(m):
     if isinstance(m, nn.Linear):
         T.nn.init.xavier_uniform_(m.weight, gain=1)
@@ -14,15 +15,16 @@ class Naive_net(nn.Module):
                  fc1_dims,
                  fc2_dims,
                  fc3_dims,
+                 fc4_dims,
                  n_output):
         super(Naive_net, self).__init__()
 
         self.fc1 = nn.Linear(input_shape, fc1_dims)
         self.fc2 = nn.Linear(fc1_dims, fc2_dims)
         self.fc3 = nn.Linear(fc2_dims, fc2_dims)
-        self.fc4 = nn.Linear(fc2_dims, fc2_dims)
-        self.fc5 = nn.Linear(fc2_dims, fc3_dims)
-        self.fc6 = nn.Linear(fc3_dims, n_output)
+        self.fc4 = nn.Linear(fc2_dims, fc3_dims)
+        self.fc5 = nn.Linear(fc3_dims, fc4_dims)
+        self.fc6 = nn.Linear(fc4_dims, n_output)
 
         self.dropout1 = nn.Dropout(0.2)
         self.dropout2 = nn.Dropout(0.2)
@@ -48,10 +50,10 @@ class Naive_net(nn.Module):
 
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
-        x = self.dropout1(x)
-        x = F.relu(self.fc3(x))
+        # x = self.dropout1(x)
+        # x = F.relu(self.fc3(x))
         x = F.relu(self.fc4(x))
-        x = self.dropout2(x)
+        # x = self.dropout2(x)
         x = F.relu(self.fc5(x))
         x = F.softmax(self.fc6(x), dim=-1)
 
@@ -63,4 +65,13 @@ class Naive_net(nn.Module):
     def get_lr(self):
         return self.scheduler.get_last_lr()[0]
 
+    def save_model(self, PATH):
+        os.makedirs(os.path.dirname(PATH), exist_ok=True)
+
+        T.save(self.state_dict(), PATH)
+
+    def load_model(self, PATH, map_location=None):
+        if map_location is None:
+            map_location = self.device  # Use the model's current device
+        self.load_state_dict(T.load(PATH, map_location=map_location, weights_only=True))
 

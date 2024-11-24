@@ -4,6 +4,7 @@ from sklearn.metrics import confusion_matrix, f1_score, accuracy_score, roc_auc_
 import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import Tuple
+from models import Naive_net
 
 def evaluate_model(net,
                    features: np.ndarray,

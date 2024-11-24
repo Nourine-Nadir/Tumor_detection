@@ -8,23 +8,26 @@
   },
   "private": true,
   "parameters": {
-    "parts":3,
+    "v_parts":3,
+    "h_parts":3,
     "nb_features": 64,
 
 
     "root_folder": "../Clean_Data/",
     "target_folder": "../resized_Data/",
     "load_and_resize": false,
-    "display_images": false,
+    "display_images": true,
     "target_size": [128,128],
     "save_file": false,
 
 
     "lr": 1e-4,
+
     "fc1_dims": 1024,
     "fc2_dims": 512,
     "fc3_dims": 256,
-    "epochs": 100,
+    "fc4_dims": 128,
+    "epochs": 160,
     "batch_size": 512
 
 

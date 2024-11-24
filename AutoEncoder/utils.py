@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import pandas as pd
 from PIL import Image
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
@@ -17,7 +18,7 @@ def load_images_from_folder(folder_path):
             except IOError:
                 print(f"Error loading image: {filename}")
     return images
-def load_images_from_folders(root_folder,
+def load_images_resize(root_folder,
                              output_folder,
                              save_files= False,
                              target_size=(128, 128)):
@@ -57,13 +58,13 @@ def load_images_from_folders(root_folder,
 
     return images, images_dict
 
-def load_images_from_folders2(root_folder,
+def load_images(target_folder,
 
                              ):
     images = []
     images_dict = {}
-    print(f'Loading from folders ... {root_folder}')
-    for root, dirs, files in os.walk(root_folder):
+    print(f'Loading from folders ... {target_folder}')
+    for root, dirs, files in os.walk(target_folder):
         label = os.path.basename(root)
         if label and label not in images_dict:  # Only add non-empty labels
             print(f'Procesing {label}')
@@ -129,3 +130,18 @@ def normalize_features(features):
     normalizer = StandardScaler()
     normalized_features = normalizer.fit_transform(features)
     return normalized_features
+
+def labeling(images, images_dict):
+    # LABELING
+    labels = np.zeros(len(images))
+    idx = 0
+    print('Labeling ....')
+    for y, key in enumerate(images_dict.keys()):
+
+        print(f'key : {key} : {len(images_dict[key])}')
+
+        labels[idx:idx + len(images_dict[key])] = y
+        idx += len(images_dict[key])
+
+    labels = np.array(pd.get_dummies(labels,dtype=np.uint8))
+    return labels
