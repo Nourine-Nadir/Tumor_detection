@@ -42,7 +42,7 @@ def train(features,
         # Detach to prevent backward through encoder
         encoded_features = encoded_features.detach()
 
-    print('Features shape : ', encoded_features.shape, '\n')
+    print('Encoded Features shape : ', encoded_features.shape, '\n')
     print('labels shape : ', labels.shape, '\n')
 
     losses = []
