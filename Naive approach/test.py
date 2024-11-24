@@ -51,7 +51,7 @@ def evaluate_model(net,
         plt.title(f'Confusion Matrix, Accuracy = {accuracy:.4f}')
         plt.ylabel('True Label')
         plt.xlabel('Predicted Label')
-        plt.savefig('confusion_matrix.png')
+        plt.savefig('confusion_matrix_BEST.png')
         plt.show()
 
         plt.plot(train_loss)

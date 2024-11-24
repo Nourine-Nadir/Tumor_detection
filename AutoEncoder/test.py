@@ -12,7 +12,7 @@ def evaluate_model(net_model_path,
                    encoder_model_path,
                    features: np.ndarray,
                    labels: np.ndarray,
-                   train_loss
+
                    ) -> Tuple[float, float]:
 
     net = Naive_net(lr=config['lr'],
@@ -78,9 +78,7 @@ def evaluate_model(net_model_path,
         plt.savefig('confusion_matrix.png')
         plt.show()
 
-        plt.plot(train_loss)
-        plt.savefig('loss.png')
-        plt.show()
+
 
     print(f"\nOverall Test Results:")
     print(f"Loss: {loss:.4f}")

@@ -13,8 +13,8 @@ with (open('params.json', 'r') as f):
 
     ROOT_FOLDER, TARGET_FOLDER,\
     _load_and_resize,_display,  TARGET_SIZE, SAVE_FILE, \
-    _lr, _fc1_dims, _fc2_dims, _fc3_dims,_fc4_dims, _latent_dim, _epochs, _batch_size, _encoder_model_path,\
-    _full_model_path, _naive_model_path, _load_model,_train_AE, _test_AE, _train, _test \
+    _lr, _fc1_dims, _fc2_dims, _fc3_dims,_fc4_dims, _latent_dim, _epochs_AE, _epochs, _batch_size, _encoder_model_path,\
+    _full_model_path, _naive_model_path, _load_model_AE, _load_model,_train_AE, _test_AE, _train, _test \
     =(params[key] for key in
      list(params.keys())
      )
@@ -44,10 +44,10 @@ if __name__ == '__main__':
         print('------ Train AutoEncoder ------')
         full_model, trained_encoder, original_images, gen_images = train_AE(data= train_images,
               latent_dim = _latent_dim,
-              load_model=_load_model,
+              load_model=_load_model_AE,
               encoder_model_path=_encoder_model_path,
               full_model_path=_full_model_path,
-              epochs=_epochs,
+              epochs=_epochs_AE,
               batch_size=_batch_size,
               lr=_lr,)
 
@@ -70,7 +70,7 @@ if __name__ == '__main__':
                                         config=config,
                                         encoder_model_path=_encoder_model_path,
                                         net_model_path=_naive_model_path,
-
+                                        load_model=_load_model
                                         )
 
     if _test :
@@ -81,4 +81,4 @@ if __name__ == '__main__':
                                   encoder_model_path=_encoder_model_path,
                                   features=test_images,
                                   labels=y_test,
-                                  train_loss=train_loss)
+                                  )

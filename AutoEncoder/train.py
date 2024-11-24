@@ -2,11 +2,13 @@ from models import Naive_net
 import numpy as np
 import torch as T
 from models import Encoder
+import matplotlib.pyplot as plt
 def train(features,
           labels,
           config,
           encoder_model_path,
           net_model_path,
+          load_model
           ):
     n_epochs = config['epochs']
     batch_size = config['batch_size']
@@ -17,7 +19,8 @@ def train(features,
                     fc3_dims=config['fc3_dims'],
                     fc4_dims=config['fc4_dims'],
                     n_output=labels.shape[-1])
-    net.load_model(net_model_path)
+    if load_model:
+        net.load_model(net_model_path)
 
     labels = T.tensor(labels, device=net.device, dtype=T.float32)
 
@@ -29,7 +32,6 @@ def train(features,
         if len(images.shape) == 3:
             images = images.unsqueeze(1)
         images = images.to(encoder.device)
-        print(f'images shape in training : {images.shape}')
 
         # Get encoded features
         encoded_features = encoder(images)
@@ -37,7 +39,6 @@ def train(features,
         encoded_features = encoded_features.detach()
 
     print('Encoded Features shape : ', encoded_features.shape, '\n')
-    print('labels shape : ', labels.shape, '\n')
 
     losses = []
     for epoch in range(n_epochs):
@@ -70,6 +71,11 @@ def train(features,
 
                 print(f'Epoch {epoch + 1}/{n_epochs}, lr : {net.get_lr():.5f} Loss: {loss:.4f}')
                 net.lr_decay()
+
+    plt.plot(losses)
+    plt.savefig('loss.png')
+    plt.show()
+
     net.save_model(net_model_path)
 
     return net, losses

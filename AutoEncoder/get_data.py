@@ -18,10 +18,10 @@ def get_data(
                                           )
 
     labels = labeling(images, images_dict)
-    print('labels : ', labels.shape)
 
     train_images, test_images, y_train, y_test = train_test_split(
         images, labels,
+        random_state=41,
         test_size=0.2,  # 20% for testing
         shuffle=True  # Ensure the data is shuffled
     )

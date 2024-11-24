@@ -25,7 +25,6 @@ class Encoder(nn.Module):
 
         # Calculate the flattened size
         self.flatten_size = 64 * (input_size // (2 ** 3)) * (input_size // (2 ** 3))
-        print(f'flatten size of encoder {self.flatten_size}')
 
         # Fully connected layer
         self.fc = nn.Linear(self.flatten_size, latent_dim)
@@ -59,7 +58,6 @@ class Decoder(nn.Module):
         self.input_size = input_size
         self.flatten_size = 64 * (input_size // (2 ** 3)) * (input_size // (2 ** 3))
 
-        print(f'flatten size of decoder {self.flatten_size}')
         # Fully connected layer
         self.fc = nn.Linear(nb_features, self.flatten_size)
 
@@ -136,8 +134,6 @@ class Naive_net(nn.Module):
                  fc4_dims,
                  n_output):
         super(Naive_net, self).__init__()
-        print(f'n outputs {n_output}')
-        print(f'input {input_shape}')
         self.fc1 = nn.Linear(input_shape, fc1_dims)
         self.fc2 = nn.Linear(fc1_dims, fc2_dims)
         self.fc3 = nn.Linear(fc2_dims, fc2_dims)
