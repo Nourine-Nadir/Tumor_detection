@@ -4,31 +4,26 @@ import torch as T
 from models import Encoder
 def train(features,
           labels,
-          lr:float,
-          fc1_dims:int,
-          fc2_dims:int,
-          fc3_dims:int,
-          fc4_dims:int,
-          latent_dim:int,
+          config,
           encoder_model_path,
-          n_epochs : int = 100,
-          batch_size : int = 32,
+          net_model_path,
           ):
-
-
-    net = Naive_net(lr=lr,
-                    input_shape=latent_dim,
-                    fc1_dims=fc1_dims,
-                    fc2_dims=fc2_dims,
-                    fc3_dims=fc3_dims,
-                    fc4_dims=fc4_dims,
+    n_epochs = config['epochs']
+    batch_size = config['batch_size']
+    net = Naive_net(lr=config['lr'],
+                    input_shape=config['latent_dim'],
+                    fc1_dims=config['fc1_dims'],
+                    fc2_dims=config['fc2_dims'],
+                    fc3_dims=config['fc3_dims'],
+                    fc4_dims=config['fc4_dims'],
                     n_output=labels.shape[-1])
+    net.load_model(net_model_path)
 
-    # features = T.tensor(features, device=net.device, dtype=T.float32)/ # Shape: (968, 1)
     labels = T.tensor(labels, device=net.device, dtype=T.float32)
-    encoder = Encoder(latent_dim=latent_dim)
+
+    encoder = Encoder(latent_dim=config['latent_dim'])
     encoder.load_model(encoder_model_path, map_location=T.device('cuda'))
-    # encoder = trained_encoder
+
     with T.no_grad():  # Add this to prevent gradient computation for encoder
         images = T.FloatTensor(features.astype(np.float32) / 255.0)
         if len(images.shape) == 3:
@@ -75,6 +70,6 @@ def train(features,
 
                 print(f'Epoch {epoch + 1}/{n_epochs}, lr : {net.get_lr():.5f} Loss: {loss:.4f}')
                 net.lr_decay()
-    net.save_model("models/NaiveNet")
+    net.save_model(net_model_path)
 
     return net, losses

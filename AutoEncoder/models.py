@@ -25,6 +25,8 @@ class Encoder(nn.Module):
 
         # Calculate the flattened size
         self.flatten_size = 64 * (input_size // (2 ** 3)) * (input_size // (2 ** 3))
+        print(f'flatten size of encoder {self.flatten_size}')
+
         # Fully connected layer
         self.fc = nn.Linear(self.flatten_size, latent_dim)
         self.apply(weights_init_)
@@ -55,9 +57,11 @@ class Decoder(nn.Module):
     def __init__(self, input_size=64, nb_features=64):
         super(Decoder, self).__init__()
         self.input_size = input_size
+        self.flatten_size = 64 * (input_size // (2 ** 3)) * (input_size // (2 ** 3))
 
+        print(f'flatten size of decoder {self.flatten_size}')
         # Fully connected layer
-        self.fc = nn.Linear(nb_features, 64 * (input_size // (2 ** 3)) * (input_size // (2 ** 3)))
+        self.fc = nn.Linear(nb_features, self.flatten_size)
 
         # First deconvolution: 16x16 -> 32x32
         self.deconv1 = nn.ConvTranspose2d(64, 32, kernel_size=4, stride=2, padding=1)
@@ -165,10 +169,10 @@ class Naive_net(nn.Module):
 
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
-        # x = self.dropout1(x)
-        # x = F.relu(self.fc3(x))
+        x = self.dropout1(x)
+        x = F.relu(self.fc3(x))
         x = F.relu(self.fc4(x))
-        # x = self.dropout2(x)
+        x = self.dropout2(x)
         x = F.relu(self.fc5(x))
         x = F.softmax(self.fc6(x), dim=-1)
 

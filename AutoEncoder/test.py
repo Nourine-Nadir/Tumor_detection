@@ -6,7 +6,8 @@ import seaborn as sns
 from typing import Tuple
 from models import Naive_net, Encoder
 
-def evaluate_model(net,
+def evaluate_model(net_model_path,
+                   config,
                    latent_dim:int,
                    encoder_model_path,
                    features: np.ndarray,
@@ -14,6 +15,14 @@ def evaluate_model(net,
                    train_loss
                    ) -> Tuple[float, float]:
 
+    net = Naive_net(lr=config['lr'],
+                    input_shape=config['latent_dim'],
+                    fc1_dims=config['fc1_dims'],
+                    fc2_dims=config['fc2_dims'],
+                    fc3_dims=config['fc3_dims'],
+                    fc4_dims=config['fc4_dims'],
+                    n_output=labels.shape[-1])
+    net.load_model(net_model_path)
     # Convert to tensors
     labels = T.tensor(labels, device=net.device, dtype=T.float32)
     encoder = Encoder(latent_dim=latent_dim)

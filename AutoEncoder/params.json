@@ -8,7 +8,6 @@
   },
   "private": true,
   "parameters": {
-    "latent_dim": 64,
 
 
     "root_folder": "../Clean_Data/",
@@ -19,21 +18,27 @@
     "save_file": true,
 
 
-    "lr": 1e-4,
+    "lr": 1e-3,
     "fc1_dims": 256,
     "fc2_dims": 128,
     "fc3_dims": 64,
     "fc4_dims": 32,
-    "epochs": 1,
-    "batch_size": 64,
+
+    "latent_dim": 256,
+
+    "epochs": 200,
+    "batch_size": 256,
 
     "encoder_model_path":"models/Encoder",
     "full_model_path":"models/autoEncoder",
+    "Naive_model_path":"models/NaiveNet",
     "load_model":true,
 
-    "train": true,
+    "train_AE": false,
+    "test_AE": false,
 
-    "test": false
+    "train": true,
+    "test": true
 
 
   }
