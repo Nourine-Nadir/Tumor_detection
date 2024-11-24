@@ -11,6 +11,7 @@ def train(features,
           fc4_dims:int,
           latent_dim:int,
           encoder_model_path,
+          trained_encoder,
           n_epochs : int = 100,
           batch_size : int = 32,
           ):
@@ -26,9 +27,9 @@ def train(features,
 
     # features = T.tensor(features, device=net.device, dtype=T.float32)/ # Shape: (968, 1)
     labels = T.tensor(labels, device=net.device, dtype=T.float32)
-    encoder = Encoder(latent_dim=latent_dim)
-    encoder.load_model(encoder_model_path, map_location=T.device('cuda'))
-
+    # encoder = Encoder(latent_dim=latent_dim)
+    # encoder.load_model(encoder_model_path, map_location=T.device('cuda'))
+    encoder = trained_encoder
     with T.no_grad():  # Add this to prevent gradient computation for encoder
         images = T.FloatTensor(features.astype(np.float32) / 255.0)
         if len(images.shape) == 3:
@@ -46,6 +47,7 @@ def train(features,
 
     losses = []
     for epoch in range(n_epochs):
+            net.train()
             total_loss = 0
             # Create data loader
 

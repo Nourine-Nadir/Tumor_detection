@@ -6,16 +6,17 @@ import json
 with (open('params.json', 'r') as f):
     params = json.load(f)["parameters"]
 
-    PARTS,_nb_features, ROOT_FOLDER, TARGET_FOLDER,\
+    _h_parts,_v_parts,_nb_features, ROOT_FOLDER, TARGET_FOLDER,\
      _load_and_resize,_display,  TARGET_SIZE, SAVE_FILE, \
-    _lr, _fc1_dims, _fc2_dims, _fc3_dims, _epochs, _batch_size\
+    _lr, _fc1_dims, _fc2_dims, _fc3_dims, _fc4_dims, _epochs, _batch_size\
     =(params[key] for key in
      list(params.keys())
      )
 
 
 if __name__ == '__main__':
-    X_train, X_test, y_train, y_test = extract_features(_parts=PARTS,
+    X_train, X_test, y_train, y_test = extract_features(h_parts=_h_parts,
+                                                        v_parts=_v_parts,
                                         _nb_features=_nb_features,
                                         _root_folder=ROOT_FOLDER,
                                         _target_folder=TARGET_FOLDER,
@@ -36,6 +37,7 @@ if __name__ == '__main__':
           fc1_dims=_fc1_dims,
           fc2_dims=_fc2_dims,
           fc3_dims=_fc3_dims,
+          fc4_dims=_fc4_dims,
           n_epochs=_epochs,
           batch_size=_batch_size)
 

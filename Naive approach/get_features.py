@@ -4,8 +4,8 @@ from engine import Engine
 from sklearn.model_selection import train_test_split
 
 # LOAD images from folders
-def extract_features(v_parts,
-                     h_parts,
+def extract_features(h_parts,
+                     v_parts,
                      _nb_features,
                      _root_folder,
                      _target_folder,
