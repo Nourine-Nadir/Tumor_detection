@@ -65,7 +65,6 @@ if __name__ == '__main__':
                                     fc4_dims=_fc4_dims,
                                     latent_dim=_latent_dim,
                                     encoder_model_path=_encoder_model_path,
-                                    trained_encoder= trained_encoder,
                                     n_epochs=_epochs*25,
                                     batch_size=_batch_size)
 
@@ -73,7 +72,6 @@ if __name__ == '__main__':
     accuracy = evaluate_model(net=trained_net,
                               latent_dim=_latent_dim,
                               encoder_model_path=_encoder_model_path,
-                              trained_encoder=trained_encoder,
                               features=test_images,
                               labels=y_test,
                               train_loss=train_loss)

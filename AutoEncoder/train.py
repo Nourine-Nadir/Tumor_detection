@@ -11,14 +11,13 @@ def train(features,
           fc4_dims:int,
           latent_dim:int,
           encoder_model_path,
-          trained_encoder,
           n_epochs : int = 100,
           batch_size : int = 32,
           ):
 
 
     net = Naive_net(lr=lr,
-                    input_shape=features.shape[-1],
+                    input_shape=latent_dim,
                     fc1_dims=fc1_dims,
                     fc2_dims=fc2_dims,
                     fc3_dims=fc3_dims,
@@ -27,9 +26,9 @@ def train(features,
 
     # features = T.tensor(features, device=net.device, dtype=T.float32)/ # Shape: (968, 1)
     labels = T.tensor(labels, device=net.device, dtype=T.float32)
-    # encoder = Encoder(latent_dim=latent_dim)
-    # encoder.load_model(encoder_model_path, map_location=T.device('cuda'))
-    encoder = trained_encoder
+    encoder = Encoder(latent_dim=latent_dim)
+    encoder.load_model(encoder_model_path, map_location=T.device('cuda'))
+    # encoder = trained_encoder
     with T.no_grad():  # Add this to prevent gradient computation for encoder
         images = T.FloatTensor(features.astype(np.float32) / 255.0)
         if len(images.shape) == 3:

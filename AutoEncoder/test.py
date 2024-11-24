@@ -9,7 +9,6 @@ from models import Naive_net, Encoder
 def evaluate_model(net,
                    latent_dim:int,
                    encoder_model_path,
-                   trained_encoder,
                    features: np.ndarray,
                    labels: np.ndarray,
                    train_loss
@@ -17,9 +16,8 @@ def evaluate_model(net,
 
     # Convert to tensors
     labels = T.tensor(labels, device=net.device, dtype=T.float32)
-    # encoder = Encoder(latent_dim=latent_dim)
-    # encoder.load_model(encoder_model_path, map_location=T.device('cuda'))
-    encoder = trained_encoder
+    encoder = Encoder(latent_dim=latent_dim)
+    encoder.load_model(encoder_model_path, map_location=T.device('cuda'))
 
     with T.no_grad():  # Add this to prevent gradient computation for encoder
         images = T.FloatTensor(features.astype(np.float32) / 255.0)

@@ -133,6 +133,7 @@ class Naive_net(nn.Module):
                  n_output):
         super(Naive_net, self).__init__()
         print(f'n outputs {n_output}')
+        print(f'input {input_shape}')
         self.fc1 = nn.Linear(input_shape, fc1_dims)
         self.fc2 = nn.Linear(fc1_dims, fc2_dims)
         self.fc3 = nn.Linear(fc2_dims, fc2_dims)
