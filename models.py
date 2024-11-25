@@ -80,7 +80,6 @@ class Decoder(nn.Module):
         # Reshape from the latent space
         x = self.fc(x)
         x = x.view(x.size(0), 64, self.input_size // (2 ** 3), self.input_size // (2 ** 3))
-
         # Upsample
         x = F.relu(self.bn1(self.deconv1(x)))  # 16x16 -> 32x32
         x = F.relu(self.bn2(self.deconv2(x)))  # 32x32 -> 64x64
@@ -100,10 +99,13 @@ class AutoEncoder(nn.Module):
         self.optimizer = T.optim.Adam(self.parameters(), lr=lr)
         self.scheduler = T.optim.lr_scheduler.LambdaLR(
             self.optimizer,
-            lr_lambda=lambda epoch: max(0.98 ** epoch, (lr * 1e-1 ))
+            lr_lambda=lambda epoch: max(0.99 ** epoch,1e-2 )
         )
     def forward(self, x):
-        x= x.to(self.device)
+        if isinstance(x, T.Tensor):
+            x = x.to(self.device)
+        if isinstance(x, np.ndarray):
+            x = T.FloatTensor(x).to(self.device)
         encoded = self.encoder(x)
         decoded = self.decoder(encoded)
         return decoded
@@ -150,7 +152,7 @@ class Naive_net(nn.Module):
         self.optimizer = T.optim.Adam(self.parameters(), lr=lr)
         self.scheduler = T.optim.lr_scheduler.LambdaLR(
             self.optimizer,
-            lr_lambda=lambda epoch: max(0.90 ** epoch, (lr*1e-1 / lr))
+            lr_lambda=lambda epoch: max(0.99 ** epoch, 1e-2 )
         )
 
         self.device = T.device('cuda' if T.cuda.is_available() else 'cpu')
