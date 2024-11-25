@@ -69,8 +69,9 @@ def train(features,
             losses.append(total_loss)
             if (epoch + 1) % 10 == 0:
 
-                print(f'Epoch {epoch + 1}/{n_epochs}, lr : {net.get_lr():.5f} Loss: {loss:.4f}')
+                print(f'Epoch {epoch + 1}/{n_epochs}, lr : {net.get_lr():.5f} Loss: {loss:.6f}')
                 net.lr_decay()
+
 
     plt.plot(losses)
     plt.savefig('loss.png')

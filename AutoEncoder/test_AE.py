@@ -1,24 +1,25 @@
-from AutoEncoder.models import Encoder
 from models import AutoEncoder
-import numpy as np
 import torch as T
-import torch.nn as nn
+from utils import *
 def test_AE(data,
          latent_dim,
          encoder_model_path,
          full_model_path,
          ):
-    encoder = Encoder(latent_dim=latent_dim)
+    model = AutoEncoder(latent_dim=latent_dim)
 
-    encoder.load_model(encoder_model_path,map_location=T.device('cuda'))
+    model.load_model(full_model_path)
 
-    images = T.FloatTensor(data.astype(np.float32) / 255.0)
+    with T.no_grad():  # Add this to prevent gradient computation for encoder
+        images = T.FloatTensor(data.astype(np.float32) / 255.0)
+        if len(images.shape) == 3:
+            images = images.unsqueeze(1)
+        images = images.cpu().detach().numpy()
 
-    # Add channel dimension if not present
-    if len(images.shape) == 3:
-        images = images.unsqueeze(1)  # Add channel dimension (B, 1, H, W)
+        outputs = model(images).cpu().detach().numpy()
 
-    images = images.to(encoder.device)
-    print(f'images shape in testing : {images.shape}')
-    outputs = encoder(images)
-    print(f'latent dim shape : {outputs.shape}')
+    nb_imgs = 5
+    indices = np.random.choice(len(images), size=nb_imgs, replace=False)
+    print(indices)
+    display_images(np.squeeze(images)[indices], rows=int(nb_imgs / 2), cols=2)
+    display_images(np.squeeze(outputs)[indices], rows=int(nb_imgs / 2), cols=2)

@@ -52,6 +52,8 @@ def train_AE(data,
         # Print epoch statistics
         avg_loss = running_loss / len(dataloader)
         print(f"Epoch [{epoch + 1}/{epochs}], lr : {model.get_lr():.5f} , Average Loss: {avg_loss:.4f}")
+
     model.encoder.save_model(encoder_model_path)
     model.save_model(full_model_path)
+
     return model,model.encoder,inputs.cpu().detach().numpy(), outputs.cpu().detach().numpy()
