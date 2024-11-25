@@ -1,0 +1,2 @@
+# Tumor Detection
+This repository contains various methods for processing and classifying brain MRI images. Using a dataset with over 12,000 samples, I implemented several models to classify images into **Tumor** and **No Tumor** categories. These models include a naive approach using grayscale histograms, as well as Autoencoders and Variational Autoencoders.
