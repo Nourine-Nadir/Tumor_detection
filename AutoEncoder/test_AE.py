@@ -21,5 +21,5 @@ def test_AE(data,
     nb_imgs = 5
     indices = np.random.choice(len(images), size=nb_imgs, replace=False)
     print(indices)
-    display_images(np.squeeze(images)[indices], rows=int(nb_imgs / 2), cols=2)
-    display_images(np.squeeze(outputs)[indices], rows=int(nb_imgs / 2), cols=2)
+    display_images(np.squeeze(images)[indices], rows=int(nb_imgs / 2), cols=2, title='Original Images')
+    display_images(np.squeeze(outputs)[indices], rows=int(nb_imgs / 2), cols=2, title='Generated Images')

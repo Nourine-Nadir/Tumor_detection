@@ -1,6 +1,6 @@
 import torch as T
 import numpy as np
-from sklearn.metrics import confusion_matrix, f1_score, accuracy_score, roc_auc_score, roc_curve, auc
+from sklearn.metrics import confusion_matrix, f1_score, accuracy_score, roc_auc_score
 import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import Tuple

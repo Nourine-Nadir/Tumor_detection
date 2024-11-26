@@ -1,6 +1,4 @@
 from models import AutoEncoder
-import torch.nn as nn
-import torch.optim as optim
 import torch as T
 import numpy as np
 

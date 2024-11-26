@@ -26,7 +26,7 @@
 
     "latent_dim": 32,
 
-    "epochs_AE": 1,
+    "epochs_AE": 10,
     "epochs": 100,
 
     "batch_size": 256,
@@ -38,7 +38,7 @@
     "load_model_AE":true,
     "load_model":false,
 
-    "train_AE": false,
+    "train_AE": true,
     "test_AE": false,
 
     "train": true,

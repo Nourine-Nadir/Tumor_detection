@@ -16,13 +16,13 @@ def extract_features(h_parts,
 
     if load_and_resize:
         print('load and resize')
-        images, images_dict = load_images_from_folders(root_folder= _root_folder,
+        images, images_dict = load_images_resize(root_folder= _root_folder,
                                                        output_folder= _target_folder,
                                                        target_size=_target_size,
                                                        save_files=_save_file,
                                                        )
     else:
-        images, images_dict = load_images_from_folders2(root_folder= _target_folder,
+        images, images_dict = load_images(target_folder= _target_folder,
                                                    )
 
 

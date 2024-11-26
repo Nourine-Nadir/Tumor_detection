@@ -1,11 +1,8 @@
-import numpy as np
-from sklearn.model_selection import train_test_split
 from test import evaluate_model
 from get_data import get_data
 from train_AE import train_AE
 from test_AE import test_AE
 from train import train
-from utils import *
 import json
 # HYPERPARAMETERS
 with (open('params.json', 'r') as f):
@@ -51,9 +48,6 @@ if __name__ == '__main__':
               batch_size=_batch_size,
               lr=_lr,)
 
-        nb_imgs = 5
-        display_images(np.squeeze(gen_images)[:nb_imgs],rows=int(nb_imgs/2),cols=2)
-        display_images(np.squeeze(original_images)[:nb_imgs],rows=int(nb_imgs/2),cols=2)
 
     if _test_AE:
         print('------ Test AutoEncoder ------')
