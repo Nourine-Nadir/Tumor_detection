@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 from PIL import Image
 import matplotlib.pyplot as plt
+from colorama.ansi import set_title
+from matplotlib.pyplot import suptitle
 from sklearn.preprocessing import StandardScaler
 
 
@@ -90,7 +92,7 @@ def load_images(target_folder,
     return np.array(images), images_dict
 
 
-def display_images(images, rows=1, cols=1):
+def display_images(images, rows=1, cols=1,title='Untitled'):
     fig, axes = plt.subplots(rows, cols, figsize=(15, 15))
     axes = axes.flatten()
 
@@ -98,8 +100,9 @@ def display_images(images, rows=1, cols=1):
         if i < rows * cols:
             axes[i].imshow(img_array)
             axes[i].axis('off')
-
+    fig,suptitle(title, fontsize=36)
     plt.tight_layout()
+    plt.savefig(title)
     plt.show()
     plt.close()
 
