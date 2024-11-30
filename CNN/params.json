@@ -1,0 +1,40 @@
+{
+  "name": "tp1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "private": true,
+  "parameters": {
+
+
+    "root_folder": "../Clean_Data/",
+    "target_folder": "../resized_Data/",
+    "load_and_resize": false,
+    "target_size": [128,128],
+    "save_file": true,
+
+
+    "lr": 1e-3,
+    "fc1_dims": 512,
+    "fc2_dims": 256,
+    "fc3_dims": 128,
+    "fc4_dims": 64,
+
+    "epochs": 10,
+
+    "batch_size": 64,
+
+
+    "model_path": "models/InceptionNetwork",
+    "load_model":true,
+
+
+    "train": true,
+    "test": true
+
+
+  }
+}
