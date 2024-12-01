@@ -3,6 +3,9 @@ import torch.nn as nn
 import torch as T
 import numpy  as np
 import os
+
+
+
 def weights_init_(m):
     if isinstance(m, nn.Linear):
         T.nn.init.xavier_uniform_(m.weight, gain=1)
@@ -120,13 +123,13 @@ class Encoder(nn.Module):
 
 
 class Decoder(nn.Module):
-    def __init__(self, input_size=64, nb_features=64):
+    def __init__(self, input_size=64, latent_dim=64):
         super(Decoder, self).__init__()
         self.input_size = input_size
         self.flatten_size = 64 * (input_size // (2 ** 3)) * (input_size // (2 ** 3))
 
         # Fully connected layer
-        self.fc = nn.Linear(nb_features, self.flatten_size)
+        self.fc = nn.Linear(latent_dim, self.flatten_size)
 
         # First deconvolution: 16x16 -> 32x32
         self.deconv1 = nn.ConvTranspose2d(64, 32, kernel_size=4, stride=2, padding=1)
@@ -250,13 +253,13 @@ class V_Encoder(nn.Module):
 
 
 class V_Decoder(nn.Module):
-    def __init__(self, input_size=64, nb_features=64):
+    def __init__(self, input_size=64, latent_dim=64):
         super(V_Decoder, self).__init__()
         self.input_size = input_size
         self.flatten_size = 64 * (input_size // (2 ** 3)) * (input_size // (2 ** 3))
 
         # Fully connected layer
-        self.fc = nn.Linear(nb_features, self.flatten_size)
+        self.fc = nn.Linear(latent_dim, self.flatten_size)
 
         # First deconvolution: 16x16 -> 32x32
         self.deconv1 = nn.ConvTranspose2d(64, 32, kernel_size=4, stride=2, padding=1)
@@ -333,3 +336,138 @@ class V_AutoEncoder(nn.Module):
             map_location = self.device  # Use the model's current device
         self.load_state_dict(T.load(PATH, map_location=map_location, weights_only=True))
 
+
+class ConvModule(nn.Module):
+    def __init__(self,
+                 input_shape,
+                 num_filters,
+                 kernel_size,
+                 stride,
+                 padding='same'):
+        super(ConvModule, self).__init__()
+        self.conv = nn.Conv2d(in_channels=input_shape,out_channels=num_filters, kernel_size=kernel_size, stride=stride, padding=padding)
+        self.bn = nn.BatchNorm2d(num_filters)
+
+        self.device = T.device('cuda' if T.cuda.is_available() else 'cpu')
+        self.to(self.device)
+
+    def forward(self, x):
+        x = F.relu(self.bn(self.conv(x)))
+        return x
+
+class InceptionModule(nn.Module):
+    def __init__(self,
+                 input_shape,
+                 num_filters1,
+                 num_filters2):
+        super(InceptionModule, self).__init__()
+        self.conv1 = ConvModule(input_shape, num_filters1, 3, 1)
+        self.conv2 = ConvModule(input_shape, num_filters2, 3, 1)
+        self.cat = T.cat
+
+        self.device = T.device('cuda' if T.cuda.is_available() else 'cpu')
+        self.to(self.device)
+
+        self.loss = nn.MSELoss()
+
+    def forward(self, x):
+        x1 = self.conv1(x)
+        x2 = self.conv2(x)
+        x = self.cat([x1,x2],dim=1)
+
+        return x
+
+class DownsampleModule(nn.Module):
+    def __init__(self,
+                 input_shape,
+                 num_filters):
+        super(DownsampleModule, self).__init__()
+        self.conv = ConvModule(input_shape, num_filters, 3, 2, padding=1)
+        self.mp = nn.MaxPool2d(2, 2)
+        self.cat = T.cat
+
+        self.device = T.device('cuda' if T.cuda.is_available() else 'cpu')
+        self.to(self.device)
+
+    def forward(self, x):
+        conv_x = self.conv(x)
+        pool_x = self.mp(x)
+        x = self.cat((conv_x,pool_x),dim=1)
+        return x
+
+class InceptionModel(nn.Module):
+    def __init__(self, nb_classes, lr=1e-4):
+        super(InceptionModel, self).__init__()
+        self.nb_classes = nb_classes
+        # First Block
+        self.conv_1 = ConvModule(1, 96, 3, 1)
+
+        # Second Block
+        self.incep_2_1 = InceptionModule(96,32,32)
+        self.incep_2_2 = InceptionModule(64, 32,48)
+        self.downsample_2 = DownsampleModule(80,80)
+
+        # Third Block
+        self.incep_3_1 = InceptionModule(160,112, 48)
+        self.incep_3_2 = InceptionModule(160, 96, 64)
+        self.incep_3_3 = InceptionModule(160,80, 80)
+        self.incep_3_4 = InceptionModule(160,48, 96)
+        self.downsample_3 = DownsampleModule(144,96)
+
+        # Fourth Block
+        self.incep_4_1 = InceptionModule(240,176, 160)
+        self.incep_4_2 = InceptionModule(336, 176, 160)
+        self.avg_pool_4 = nn.AvgPool2d(kernel_size=7)
+
+        self.flat_4 = nn.Flatten()
+        self.fc = nn.Linear(5376,self.nb_classes)
+
+
+        self.device = T.device('cuda' if T.cuda.is_available() else 'cpu')
+        self.to(self.device)
+        self.apply(weights_init_)
+
+        self.loss = nn.BCELoss()
+        self.optimizer = T.optim.Adam(self.parameters(), lr=lr)
+        self.scheduler = T.optim.lr_scheduler.LambdaLR(
+            self.optimizer,
+            lr_lambda=lambda epoch: max(0.9 ** epoch, 1e-1)
+        )
+
+    def forward(self, _inputs):
+        x = self.conv_1(_inputs)
+
+        x = self.incep_2_1(x)
+        x = self.incep_2_2(x)
+        x = self.downsample_2(x)
+
+        x = self.incep_3_1(x)
+        x = self.incep_3_2(x)
+        x = self.incep_3_3(x)
+        x = self.incep_3_4(x)
+        x = self.downsample_3(x)
+
+        x = self.incep_4_1(x)
+        x = self.incep_4_2(x)
+        x = self.avg_pool_4(x)
+
+        x = self.flat_4(x)
+
+        x = F.softmax(self.fc(x),dim=-1)
+        return x
+
+    def lr_decay(self):
+        self.scheduler.step()
+
+    def get_lr(self):
+        return self.scheduler.get_last_lr()[0]
+
+    def save_model(self, PATH):
+        os.makedirs(os.path.dirname(PATH), exist_ok=True)
+
+        T.save(self.state_dict(), PATH)
+
+    def load_model(self, PATH, map_location=None):
+        if map_location is None:
+            map_location = self.device  # Use the model's current device
+        self.load_state_dict(T.load(PATH, map_location=map_location, weights_only=True))
