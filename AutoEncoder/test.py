@@ -75,7 +75,7 @@ def evaluate_model(net_model_path,
         plt.title(f'Confusion Matrix, Accuracy = {accuracy:.4f}')
         plt.ylabel('True Label')
         plt.xlabel('Predicted Label')
-        plt.savefig('confusion_matrix.png')
+        plt.savefig(f'confusion_matrix {accuracy:.4f}.png')
         plt.show()
 
 

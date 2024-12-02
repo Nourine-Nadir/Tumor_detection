@@ -26,7 +26,7 @@
 
     "latent_dim": 32,
 
-    "epochs_AE": 10,
+    "epochs_AE": 30,
     "epochs": 100,
 
     "batch_size": 256,
@@ -35,11 +35,11 @@
     "full_model_path":"models/V_autoEncoder",
     "Naive_model_path":"models/NaiveNet",
 
-    "load_model_AE":true,
+    "load_model_AE":false,
     "load_model":false,
 
     "train_AE": true,
-    "test_AE": false,
+    "test_AE": true,
 
     "train": true,
     "test": true

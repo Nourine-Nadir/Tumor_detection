@@ -13,23 +13,23 @@
     "root_folder": "../Clean_Data/",
     "target_folder": "../resized_Data/",
     "load_and_resize": false,
-    "target_size": [128,128],
+    "target_size": [64,64],
     "save_file": true,
 
 
-    "lr": 1e-3,
-    "fc1_dims": 512,
-    "fc2_dims": 256,
-    "fc3_dims": 128,
-    "fc4_dims": 64,
+    "lr": 1e-4,
+    "fc1_dims": 0,
+    "fc2_dims": 0,
+    "fc3_dims": 0,
+    "fc4_dims": 0,
 
-    "epochs": 1,
+    "epochs": 20,
 
-    "batch_size": 64,
+    "batch_size": 96,
 
 
     "model_path": "models/InceptionNetwork",
-    "load_model":true,
+    "load_model":false,
 
 
     "train": true,

@@ -22,11 +22,16 @@ def evaluate_model(net_model_path,
                     fc3_dims=config['fc3_dims'],
                     fc4_dims=config['fc4_dims'],
                     n_output=labels.shape[-1])
-    net.load_model(net_model_path)
-    # Convert to tensors
     labels = T.tensor(labels, device=net.device, dtype=T.float32)
     encoder = V_Encoder(latent_dim=latent_dim)
-    encoder.load_model(encoder_model_path, map_location=T.device('cuda'))
+    try:
+        net.load_model(net_model_path)
+        encoder.load_model(encoder_model_path, map_location=T.device('cuda'))
+
+    except:
+        print('Model could not be loaded for testing')
+    # Convert to tensors
+
 
     with T.no_grad():  # Add this to prevent gradient computation for encoder
         images = T.FloatTensor(features.astype(np.float32) / 255.0)
@@ -75,7 +80,7 @@ def evaluate_model(net_model_path,
         plt.title(f'Confusion Matrix, Accuracy = {accuracy:.4f}')
         plt.ylabel('True Label')
         plt.xlabel('Predicted Label')
-        plt.savefig('confusion_matrix.png')
+        plt.savefig('confusion_matrix 0.9807.png')
         plt.show()
 
 

@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
     if _train:
         print('------ Train Naive Net ------')
-        embedded_features, results = train(features=train_images ,
+        embedded_features, results = train(features=train_images,
                                         labels=y_train,
                                         config=config,
                                         model_path=_model_path,

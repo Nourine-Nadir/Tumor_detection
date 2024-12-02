@@ -1,7 +1,7 @@
 from test import evaluate_model
 from get_data import get_data
-from train_AE import train_AE
-from test_AE import test_AE
+from train_VAE import train_AE
+from test_VAE import test_AE
 from train import train
 import json
 # HYPERPARAMETERS

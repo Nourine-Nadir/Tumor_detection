@@ -8,8 +8,8 @@
   },
   "private": true,
   "parameters": {
-    "h_parts":3,
-    "v_parts":2,
+    "h_parts":5,
+    "v_parts":3,
     "nb_features": 64,
 
 
@@ -26,7 +26,7 @@
     "fc2_dims": 512,
     "fc3_dims": 256,
     "fc4_dims": 128,
-    "epochs": 10,
+    "epochs": 100,
     "batch_size": 512
 
 

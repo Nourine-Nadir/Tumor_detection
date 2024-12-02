@@ -169,7 +169,7 @@ class AutoEncoder(nn.Module):
         self.optimizer = T.optim.Adam(self.parameters(), lr=lr)
         self.scheduler = T.optim.lr_scheduler.LambdaLR(
             self.optimizer,
-            lr_lambda=lambda epoch: max(0.99 ** epoch,1e-2 )
+            lr_lambda=lambda epoch: max(0.995 ** epoch,1e-2 )
         )
     def forward(self, x):
         if isinstance(x, T.Tensor):
@@ -338,103 +338,83 @@ class V_AutoEncoder(nn.Module):
 
 
 class ConvModule(nn.Module):
-    def __init__(self,
-                 input_shape,
-                 num_filters,
-                 kernel_size,
-                 stride,
-                 padding='same'):
+    def __init__(self, num_filters, kernel_size, stride, padding='same'):
         super(ConvModule, self).__init__()
-        self.conv = nn.Conv2d(in_channels=input_shape,out_channels=num_filters, kernel_size=kernel_size, stride=stride, padding=padding)
+        self.conv = nn.LazyConv2d(out_channels=num_filters, kernel_size=kernel_size, stride=stride, padding=padding)
         self.bn = nn.BatchNorm2d(num_filters)
-
-        self.device = T.device('cuda' if T.cuda.is_available() else 'cpu')
-        self.to(self.device)
 
     def forward(self, x):
         x = F.relu(self.bn(self.conv(x)))
         return x
 
+
 class InceptionModule(nn.Module):
-    def __init__(self,
-                 input_shape,
-                 num_filters1,
-                 num_filters2):
+    def __init__(self, num_filters1, num_filters2):
         super(InceptionModule, self).__init__()
-        self.conv1 = ConvModule(input_shape, num_filters1, 3, 1)
-        self.conv2 = ConvModule(input_shape, num_filters2, 3, 1)
+        self.conv1 = ConvModule(num_filters1, 3, 1)
+        self.conv2 = ConvModule(num_filters2, 3, 1)
         self.cat = T.cat
-
-        self.device = T.device('cuda' if T.cuda.is_available() else 'cpu')
-        self.to(self.device)
-
-        self.loss = nn.MSELoss()
 
     def forward(self, x):
         x1 = self.conv1(x)
         x2 = self.conv2(x)
-        x = self.cat([x1,x2],dim=1)
-
+        x = self.cat([x1, x2], dim=1)  # Concatenate along the channel axis
         return x
 
+
 class DownsampleModule(nn.Module):
-    def __init__(self,
-                 input_shape,
-                 num_filters):
+    def __init__(self, num_filters):
         super(DownsampleModule, self).__init__()
-        self.conv = ConvModule(input_shape, num_filters, 3, 2, padding=1)
+        self.conv = ConvModule(num_filters, 3, 2, padding=1)
         self.mp = nn.MaxPool2d(2, 2)
         self.cat = T.cat
-
-        self.device = T.device('cuda' if T.cuda.is_available() else 'cpu')
-        self.to(self.device)
 
     def forward(self, x):
         conv_x = self.conv(x)
         pool_x = self.mp(x)
-        x = self.cat((conv_x,pool_x),dim=1)
+        x = self.cat([conv_x, pool_x], dim=1)  # Concatenate along the channel axis
         return x
 
+
 class InceptionModel(nn.Module):
-    def __init__(self, nb_classes, lr=1e-4):
+    def __init__(self, nb_classes=10, lr=1e-4):
         super(InceptionModel, self).__init__()
-        self.nb_classes = nb_classes
+
         # First Block
-        self.conv_1 = ConvModule(1, 96, 3, 1)
+        self.conv_1 = ConvModule(96, 3, 1)
 
         # Second Block
-        self.incep_2_1 = InceptionModule(96,32,32)
-        self.incep_2_2 = InceptionModule(64, 32,48)
-        self.downsample_2 = DownsampleModule(80,80)
+        self.incep_2_1 = InceptionModule(32, 32)
+        self.incep_2_2 = InceptionModule(32, 48)
+        self.downsample_2 = DownsampleModule(80)
 
         # Third Block
-        self.incep_3_1 = InceptionModule(160,112, 48)
-        self.incep_3_2 = InceptionModule(160, 96, 64)
-        self.incep_3_3 = InceptionModule(160,80, 80)
-        self.incep_3_4 = InceptionModule(160,48, 96)
-        self.downsample_3 = DownsampleModule(144,96)
+        self.incep_3_1 = InceptionModule(112, 48)
+        self.incep_3_2 = InceptionModule(96, 64)
+        self.incep_3_3 = InceptionModule(80, 80)
+        self.incep_3_4 = InceptionModule(48, 96)
+        self.downsample_3 = DownsampleModule(96)
 
         # Fourth Block
-        self.incep_4_1 = InceptionModule(240,176, 160)
-        self.incep_4_2 = InceptionModule(336, 176, 160)
+        self.incep_4_1 = InceptionModule(176, 160)
+        self.incep_4_2 = InceptionModule(176, 160)
         self.avg_pool_4 = nn.AvgPool2d(kernel_size=7)
 
         self.flat_4 = nn.Flatten()
-        self.fc = nn.Linear(5376,self.nb_classes)
-
+        self.dense_4 = nn.LazyLinear(nb_classes)
 
         self.device = T.device('cuda' if T.cuda.is_available() else 'cpu')
         self.to(self.device)
-        self.apply(weights_init_)
 
         self.loss = nn.BCELoss()
         self.optimizer = T.optim.Adam(self.parameters(), lr=lr)
         self.scheduler = T.optim.lr_scheduler.LambdaLR(
             self.optimizer,
-            lr_lambda=lambda epoch: max(0.9 ** epoch, 1e-1)
+            lr_lambda=lambda epoch: max(0.95 ** epoch, 1e-1)
         )
 
     def forward(self, _inputs):
+        # Forward pass
         x = self.conv_1(_inputs)
 
         x = self.incep_2_1(x)
@@ -452,9 +432,7 @@ class InceptionModel(nn.Module):
         x = self.avg_pool_4(x)
 
         x = self.flat_4(x)
-
-        x = F.softmax(self.fc(x),dim=-1)
-        return x
+        return F.softmax(self.dense_4(x), dim=-1)
 
     def lr_decay(self):
         self.scheduler.step()
@@ -464,7 +442,6 @@ class InceptionModel(nn.Module):
 
     def save_model(self, PATH):
         os.makedirs(os.path.dirname(PATH), exist_ok=True)
-
         T.save(self.state_dict(), PATH)
 
     def load_model(self, PATH, map_location=None):

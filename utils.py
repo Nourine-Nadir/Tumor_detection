@@ -58,7 +58,7 @@ def load_images_resize(root_folder,
                     print(f"Error loading image: {file}")
 
 
-    return images, images_dict
+    return np.array(images), images_dict
 
 def load_images(target_folder,
 
@@ -148,3 +148,4 @@ def labeling(images, images_dict):
 
     labels = np.array(pd.get_dummies(labels,dtype=np.uint8))
     return labels
+
