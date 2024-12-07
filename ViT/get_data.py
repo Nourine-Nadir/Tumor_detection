@@ -1,4 +1,3 @@
-from AutoEncoder.train import train
 from utils_ViT import *
 from sklearn.model_selection import train_test_split
 from torchvision.transforms import Resize, ToTensor

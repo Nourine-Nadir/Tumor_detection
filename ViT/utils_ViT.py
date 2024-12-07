@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 from PIL import Image
 import matplotlib.pyplot as plt
-from colorama.ansi import set_title
 from matplotlib.pyplot import suptitle
 from sklearn.preprocessing import StandardScaler
 from torchvision.transforms.functional import to_pil_image

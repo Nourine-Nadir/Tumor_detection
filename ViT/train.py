@@ -4,9 +4,7 @@ from sklearn.model_selection import train_test_split
 from vit import ViT
 from tqdm import tqdm
 
-from sklearn.metrics import confusion_matrix, f1_score, accuracy_score, roc_auc_score
-import matplotlib.pyplot as plt
-import seaborn as sns
+
 
 def train(
         images,
@@ -20,7 +18,7 @@ def train(
         images = T.FloatTensor(np.array(images).astype(np.float32) / 255.0)
     if len(images.shape) == 3 :
         images = T.unsqueeze(images, dim=1)
-    print(images.shape)
+
     model = ViT(
         image_size = images.shape[-1],
         patch_size = 8,
@@ -37,18 +35,15 @@ def train(
 
     if load_model:
         model.load_model(model_path+ ' best_model')
-    # labels = np.argmax(labels, axis=1)
     labels = T.tensor(
         np.argmax(np.array(labels),axis=-1)
     )
-    all_labels= labels
+
     X_train, X_val, y_train, y_val = train_test_split(
         images, labels,
         test_size=0.2,  # 20% for validation
         random_state=42  # for reproducibility
     )
-    # y_train = T.tensor(np.array(y_train), dtype=T.float32)
-    # y_val = T.tensor(np.array(y_val), dtype=T.float32)
 
     train_dataset = T.utils.data.TensorDataset(X_train, y_train)
     train_loader = T.utils.data.DataLoader(train_dataset,

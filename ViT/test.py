@@ -22,9 +22,6 @@ def test(
 
 
     labels = T.tensor(np.argmax(np.array(labels), axis=-1), device=DEVICE, dtype=T.long)
-    # Or if labels are already 1D
-
-
 
     criterion = T.nn.CrossEntropyLoss()
     with T.no_grad():
