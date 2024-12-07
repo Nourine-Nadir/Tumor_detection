@@ -1,0 +1,41 @@
+{
+  "name": "tp1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "private": true,
+  "parameters": {
+
+
+    "root_folder": "../Clean_Data/",
+    "target_folder": "../resized_Data/",
+    "load_and_resize": false,
+    "target_size": [64,64],
+    "save_file": true,
+    "display_images": false,
+
+
+    "emb_dim": 128,
+    "mlp_dim": 256,
+    "dropout": 0.1,
+
+    "patch_size": 8,
+    "n_heads": 4,
+    "n_layers": 6,
+
+    "lr": 1e-3,
+    "epochs": 50,
+    "batch_size": 256,
+
+    "model_path":"models/ViT",
+    "load_model":false,
+
+    "train": true,
+    "test": true
+
+
+  }
+}
