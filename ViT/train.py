@@ -31,16 +31,13 @@ def train(
     )
     if load_model:
         model.load_model(model_path)
-    # labels = np.argmax(labels, axis=1)
-    labels = T.tensor(np.array(labels), dtype=T.float32)
 
+    labels = T.tensor(np.array(labels), dtype=T.float32)
     X_train, X_val, y_train, y_val = train_test_split(
         images, labels,
         test_size=0.2,  # 20% for validation
         random_state=42  # for reproducibility
     )
-    # y_train = T.tensor(np.array(y_train), dtype=T.float32)
-    # y_val = T.tensor(np.array(y_val), dtype=T.float32)
 
     train_dataset = T.utils.data.TensorDataset(X_train, y_train)
     train_loader = T.utils.data.DataLoader(train_dataset,

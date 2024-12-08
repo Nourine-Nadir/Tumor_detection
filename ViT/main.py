@@ -4,6 +4,7 @@ import numpy as np
 from train import train
 from test import test
 
+
 # HYPERPARAMETERS
 with (open('params.json', 'r') as f):
     params = json.load(f)["parameters"]
