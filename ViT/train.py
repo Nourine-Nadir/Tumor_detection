@@ -82,7 +82,13 @@ def train(
         val_losses.append(avg_val_loss)
 
         if avg_val_loss < best_loss:
-            model.save_model(model_path+ ' best_model')
+            try :
+                model.save_model(model_path+ ' best_model')
+                print('New best model saved !')
+                best_model = model
+                best_loss = avg_val_loss
+            except:
+                print('Error while saving new best model !')
         if epoch % 1 == 0:
             model.lr_decay()
             print(f'Train Loss: {avg_train_loss:.6f},'
@@ -90,4 +96,4 @@ def train(
                   f'lr {model.get_lr():.5f}' )
 
     model.save_model(model_path+ ' last_model')
-    return model
+    return best_model

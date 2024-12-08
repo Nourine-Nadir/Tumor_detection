@@ -22,9 +22,9 @@ class PatchEmbedding(nn.Module):
         self.projections = nn.Sequential(
 
             Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)', p1=patch_size, p2=patch_size),
-            nn.LayerNorm(self.patch_size * self.patch_size),# Very important improvement
+            nn.LayerNorm(self.patch_size * self.patch_size),  # Very important improvement
             nn.Linear(self.patch_dim, emb_dim),
-            nn.LayerNorm(emb_dim),# Very important improvement
+            nn.LayerNorm(emb_dim),  # Very important improvement
             # (h * w) / (p1*p2), emb_dim
         )
 
@@ -169,7 +169,6 @@ class ViT(nn.Module):
         self.to_latent = nn.Identity().to(self.device)
 
         self.head = nn.Linear(emb_dim, out_dim).to(self.device)
-
 
         self.optimizer = T.optim.AdamW(self.parameters(), lr=lr)
         self.scheduler = T.optim.lr_scheduler.LambdaLR(
