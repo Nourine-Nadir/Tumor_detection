@@ -18,7 +18,6 @@ with (open('params.json', 'r') as f):
      list(params.keys())
      )
 
-
 if __name__ == '__main__':
 
     train_images, test_images, y_train, y_test = \
