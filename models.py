@@ -1,15 +1,15 @@
 import torch.nn.functional as F
 import torch.nn as nn
 import torch as T
-import numpy  as np
+import numpy as np
 import os
-
 
 
 def weights_init_(m):
     if isinstance(m, nn.Linear):
         T.nn.init.xavier_uniform_(m.weight, gain=1)
         T.nn.init.constant_(m.bias, 0)
+
 
 class Naive_net(nn.Module):
     def __init__(self,
@@ -23,21 +23,20 @@ class Naive_net(nn.Module):
         super(Naive_net, self).__init__()
         self.fc1 = nn.Linear(input_shape, fc1_dims)
         self.fc2 = nn.Linear(fc1_dims, fc2_dims)
-        self.fc3 = nn.Linear(fc2_dims, fc2_dims)
-        self.fc4 = nn.Linear(fc2_dims, fc3_dims)
-        self.fc5 = nn.Linear(fc3_dims, fc4_dims)
-        self.fc6 = nn.Linear(fc4_dims, n_output)
+        self.fc3 = nn.Linear(fc2_dims, fc3_dims)
+        self.fc4 = nn.Linear(fc3_dims, fc4_dims)
+        self.fc5 = nn.Linear(fc4_dims, n_output)
 
         self.dropout1 = nn.Dropout(0.2)
         self.dropout2 = nn.Dropout(0.2)
 
         self.apply(weights_init_)
 
-        self.loss= nn.CrossEntropyLoss()
+        self.loss = nn.CrossEntropyLoss()
         self.optimizer = T.optim.Adam(self.parameters(), lr=lr)
         self.scheduler = T.optim.lr_scheduler.LambdaLR(
             self.optimizer,
-            lr_lambda=lambda epoch: max(0.99 ** epoch, 1e-2 )
+            lr_lambda=lambda epoch: max(0.99 ** epoch, 1e-2)
         )
 
         self.device = T.device('cuda' if T.cuda.is_available() else 'cpu')
@@ -51,13 +50,12 @@ class Naive_net(nn.Module):
             x = x.to(self.device)
 
         x = F.relu(self.fc1(x))
+        # x = self.dropout1(x)
         x = F.relu(self.fc2(x))
-        x = self.dropout1(x)
         x = F.relu(self.fc3(x))
+        # x = self.dropout2(x)
         x = F.relu(self.fc4(x))
-        x = self.dropout2(x)
-        x = F.relu(self.fc5(x))
-        x = F.softmax(self.fc6(x), dim=-1)
+        x = self.fc5(x)
 
         return x
 
@@ -76,6 +74,7 @@ class Naive_net(nn.Module):
         if map_location is None:
             map_location = self.device  # Use the model's current device
         self.load_state_dict(T.load(PATH, map_location=map_location, weights_only=True))
+
 
 class Encoder(nn.Module):
     def __init__(self, input_size=128, latent_dim=64):
@@ -169,8 +168,9 @@ class AutoEncoder(nn.Module):
         self.optimizer = T.optim.Adam(self.parameters(), lr=lr)
         self.scheduler = T.optim.lr_scheduler.LambdaLR(
             self.optimizer,
-            lr_lambda=lambda epoch: max(0.995 ** epoch,1e-2 )
+            lr_lambda=lambda epoch: max(0.995 ** epoch, 1e-2)
         )
+
     def forward(self, x):
         if isinstance(x, T.Tensor):
             x = x.to(self.device)
@@ -201,6 +201,7 @@ class V_Encoder(nn.Module):
     def __init__(self, input_size=128, latent_dim=64):
         super(V_Encoder, self).__init__()
         self.input_size = input_size
+        self.latent_dim = latent_dim
         # First convolution: 128x128 -> 64x64
         self.conv1 = nn.Conv2d(1, 16, kernel_size=3, stride=2, padding=1)
         self.bn1 = nn.BatchNorm2d(16)
@@ -217,17 +218,19 @@ class V_Encoder(nn.Module):
         self.flatten_size = 64 * (input_size // (2 ** 3)) * (input_size // (2 ** 3))
 
         # Fully connected layer
-        self.fc_mu = nn.Linear(self.flatten_size, latent_dim)
-        self.fc_var = nn.Linear(self.flatten_size, latent_dim)
+        self.flatten = nn.Linear(self.flatten_size, latent_dim)
+
+        self.fc_mu = nn.Linear(latent_dim, 64)
+        self.fc_var = nn.Linear(latent_dim, 64)
         self.apply(weights_init_)
 
         self.device = T.device('cuda' if T.cuda.is_available() else 'cpu')
         self.to(self.device)
 
     def reparameterize(self, mu, log_var):
-        std = T.exp(0.5*log_var)
+        std = T.exp(0.5 * log_var)
         eps = T.randn_like(std)
-        z= mu + eps * std
+        z = mu + eps * std
 
         return z
 
@@ -236,10 +239,12 @@ class V_Encoder(nn.Module):
         x = F.relu(self.bn2(self.conv2(x)))  # 64x64 -> 32x32
         x = F.relu(self.bn3(self.conv3(x)))  # 32x32 -> 16x16
         x = x.view(x.size(0), -1)  # Flatten
+        x = self.flatten(x)
         mu = self.fc_mu(x)
         var = self.fc_var(x)
         z = self.reparameterize(mu, var)
-        return z, mu, var
+
+        return x, z, mu, var
 
     def save_model(self, PATH):
         os.makedirs(os.path.dirname(PATH), exist_ok=True)
@@ -259,7 +264,7 @@ class V_Decoder(nn.Module):
         self.flatten_size = 64 * (input_size // (2 ** 3)) * (input_size // (2 ** 3))
 
         # Fully connected layer
-        self.fc = nn.Linear(latent_dim, self.flatten_size)
+        self.fc = nn.Linear(64, self.flatten_size)
 
         # First deconvolution: 16x16 -> 32x32
         self.deconv1 = nn.ConvTranspose2d(64, 32, kernel_size=4, stride=2, padding=1)
@@ -299,10 +304,8 @@ class V_AutoEncoder(nn.Module):
         self.optimizer = T.optim.Adam(self.parameters(), lr=lr)
         self.scheduler = T.optim.lr_scheduler.LambdaLR(
             self.optimizer,
-            lr_lambda=lambda epoch: max(0.995 ** epoch,1e-2 )
+            lr_lambda=lambda epoch: max(0.995 ** epoch, 1e-2)
         )
-
-
 
     def kl_loss(self, mu, log_var):
         kl = -0.5 * T.sum(1 + log_var - mu.pow(2) - log_var.exp(), dim=1)
@@ -314,11 +317,137 @@ class V_AutoEncoder(nn.Module):
         if isinstance(x, np.ndarray):
             x = T.FloatTensor(x).to(self.device)
 
-        z, mu, var = self.encoder(x)
+        x, z, mu, var = self.encoder(x)
 
-        decoded = self.decoder(z)
+        x_hat = self.decoder(z)
 
-        return decoded, mu, var
+        return x_hat, mu, var
+
+    def lr_decay(self):
+        self.scheduler.step()
+
+    def get_lr(self):
+        return self.scheduler.get_last_lr()[0]
+
+    def save_model(self, PATH):
+        os.makedirs(os.path.dirname(PATH), exist_ok=True)
+
+        T.save(self.state_dict(), PATH)
+
+    def load_model(self, PATH, map_location=None):
+        if map_location is None:
+            map_location = self.device  # Use the model's current device
+        self.load_state_dict(T.load(PATH, map_location=map_location, weights_only=True))
+
+
+class VV_Encoder(nn.Module):
+    def __init__(self, input_size=4096, hidden_dim=1024, latent_dim=64):
+        super(VV_Encoder, self).__init__()
+
+        # self.flatten = nn.Flatten()
+        self.fc1 = nn.Linear(input_size, hidden_dim)
+        self.fc2 = nn.Linear(hidden_dim, latent_dim)
+        self.relu = nn.LeakyReLU(0.2)
+
+        self.apply(weights_init_)
+
+        self.device = T.device('cuda' if T.cuda.is_available() else 'cpu')
+        self.to(self.device)
+
+    def forward(self, x):
+        x = self.relu(self.fc1(x))
+        x = self.relu(self.fc2(x))
+
+        return x
+
+    def save_model(self, PATH):
+        os.makedirs(os.path.dirname(PATH), exist_ok=True)
+
+        T.save(self.state_dict(), PATH)
+
+    def load_model(self, PATH, map_location=None):
+        if map_location is None:
+            map_location = self.device  # Use the model's current device
+        self.load_state_dict(T.load(PATH, map_location=map_location, weights_only=True))
+
+
+class VV_Decoder(nn.Module):
+    def __init__(self, input_size=4096, hidden_dim=1024, latent_dim=64):
+        super(VV_Decoder, self).__init__()
+
+        self.fc1 = nn.Linear(2, latent_dim)
+        self.fc2 = nn.Linear(latent_dim, hidden_dim)
+        self.fc_h1 = nn.Linear(hidden_dim, 512)
+        self.fc_h2 = nn.Linear(512, 512)
+        self.fc3 = nn.Linear(512, input_size)
+
+        self.relu = nn.LeakyReLU(0.2)
+
+        self.apply(weights_init_)
+        self.device = T.device('cuda' if T.cuda.is_available() else 'cpu')
+        self.to(self.device)
+
+    def forward(self, x):
+        # Reshape from the latent space
+        x = self.relu(self.fc1(x))
+        x = self.relu(self.fc2(x))
+        x = self.relu(self.fc_h1(x))
+        x = self.relu(self.fc_h2(x))
+        x = T.sigmoid(self.fc3(x))
+        return x
+
+
+class VV_AutoEncoder(nn.Module):
+    def __init__(self, input_size=128, hidden_dim=1024, latent_dim=64, lr=1e-4):
+        super(VV_AutoEncoder, self).__init__()
+        self.encoder = VV_Encoder(input_size=input_size, hidden_dim=hidden_dim, latent_dim=latent_dim)
+
+        self.fc_mu = nn.Linear(latent_dim, 2)
+        self.fc_logvar = nn.Linear(latent_dim, 2)
+
+        self.decoder = VV_Decoder(input_size=input_size, hidden_dim=hidden_dim, latent_dim=latent_dim)
+        self.device = T.device('cuda' if T.cuda.is_available() else 'cpu')
+        self.to(self.device)
+
+        self.criterion = nn.MSELoss()
+        self.optimizer = T.optim.Adam(self.parameters(), lr=lr)
+        self.scheduler = T.optim.lr_scheduler.LambdaLR(
+            self.optimizer,
+            lr_lambda=lambda epoch: max(0.995 ** epoch, 1e-4)
+        )
+
+    def kl_loss(self, mu, log_var):
+        kl = -0.5 * T.sum(1 + log_var - mu.pow(2) - log_var.exp(), dim=1)
+        return kl.mean()
+
+    def reparameterize(self, mu, log_var):
+        std = T.exp(0.5 * log_var)
+        eps = T.randn_like(std)
+        z = mu + eps * std
+
+        return z
+
+    def encode(self, x):
+        x = self.encoder(x)
+        mean, logvar = self.fc_mu(x), self.fc_logvar(x)
+        return mean, logvar
+
+    def decode(self, x):
+        return self.decoder(x)
+
+    def forward(self, x):
+        if isinstance(x, T.Tensor):
+            x = x.to(self.device)
+        if isinstance(x, np.ndarray):
+            x = T.FloatTensor(x).to(self.device)
+
+        mu, logvar = self.encode(x)
+
+        z = self.reparameterize(mu, logvar)
+
+        decoded = self.decode(z)
+
+        return decoded, mu, logvar
 
     def lr_decay(self):
         self.scheduler.step()
@@ -398,7 +527,7 @@ class InceptionModel(nn.Module):
         # Fourth Block
         self.incep_4_1 = InceptionModule(176, 160)
         self.incep_4_2 = InceptionModule(176, 160)
-        self.avg_pool_4 = nn.AvgPool2d(kernel_size=7)
+        self.avg_pool_4 = nn.AvgPool2d(kernel_size=5)
 
         self.flat_4 = nn.Flatten()
         self.dense_4 = nn.LazyLinear(nb_classes)
@@ -406,11 +535,11 @@ class InceptionModel(nn.Module):
         self.device = T.device('cuda' if T.cuda.is_available() else 'cpu')
         self.to(self.device)
 
-        self.loss = nn.BCELoss()
+        self.loss = nn.CrossEntropyLoss()
         self.optimizer = T.optim.Adam(self.parameters(), lr=lr)
         self.scheduler = T.optim.lr_scheduler.LambdaLR(
             self.optimizer,
-            lr_lambda=lambda epoch: max(0.95 ** epoch, 1e-1)
+            lr_lambda=lambda epoch: max(0.99 ** epoch, 1e-1)
         )
 
     def forward(self, _inputs):
@@ -432,7 +561,7 @@ class InceptionModel(nn.Module):
         x = self.avg_pool_4(x)
 
         x = self.flat_4(x)
-        return F.softmax(self.dense_4(x), dim=-1)
+        return self.dense_4(x)
 
     def lr_decay(self):
         self.scheduler.step()
