@@ -30,4 +30,4 @@ and v_parts are the number of horizontal and vertical segments, respectively.
 ![Inception Module](InceptionModel.png)
 
 ## Auto Encoder
-![Auto Encoder](Auto Encoder.png)
+![Auto Encoder](AutoEncoder.png)
