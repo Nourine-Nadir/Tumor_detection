@@ -27,4 +27,7 @@ and v_parts are the number of horizontal and vertical segments, respectively.
     Use the concatenated feature vector as input to a fully connected MLP for classification.
 
 ## InceptionModel
-![alt text](InceptionModel.png)
+![Inception Module](InceptionModel.png)
+
+## Auto Encoder
+![Auto Encoder](Auto Encoder.png)
