@@ -10,7 +10,7 @@ def evaluate_model(net_model_path,
                    config,
                    latent_dim:int,
                    encoder_model_path,
-                   features: np.ndarray,
+                   images: np.ndarray,
                    labels: np.ndarray,
 
                    ) -> Tuple[float, float]:
@@ -23,7 +23,7 @@ def evaluate_model(net_model_path,
                     fc4_dims=config['fc4_dims'],
                     n_output=labels.shape[-1])
     labels = T.tensor(labels, device=net.device, dtype=T.float32)
-    encoder = V_Encoder(latent_dim=latent_dim)
+    encoder = V_Encoder(input_size= images.shape[-1],latent_dim=latent_dim)
     try:
         net.load_model(net_model_path)
         encoder.load_model(encoder_model_path, map_location=T.device('cuda'))
@@ -34,14 +34,14 @@ def evaluate_model(net_model_path,
 
 
     with T.no_grad():  # Add this to prevent gradient computation for encoder
-        images = T.FloatTensor(features.astype(np.float32) / 255.0)
+        images = T.FloatTensor(images.astype(np.float32) / 255.0)
         if len(images.shape) == 3:
             images = images.unsqueeze(1)
         images = images.to(encoder.device)
         print(f'images shape in training : {images.shape}')
 
         # Get encoded features
-        encoded_features, _, _ = encoder(images)
+        encoded_features, _, _, _ = encoder(images)
         # Detach to prevent backward through encoder
         encoded_features = encoded_features.detach()
 

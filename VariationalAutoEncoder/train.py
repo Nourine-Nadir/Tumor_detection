@@ -3,7 +3,7 @@ import numpy as np
 import torch as T
 from models import V_Encoder
 import matplotlib.pyplot as plt
-def train(features,
+def train(images,
           labels,
           config,
           encoder_model_path,
@@ -24,17 +24,17 @@ def train(features,
 
     labels = T.tensor(labels, device=net.device, dtype=T.float32)
 
-    encoder = V_Encoder(latent_dim=config['latent_dim'])
+    encoder = V_Encoder(input_size= images.shape[-1],latent_dim=config['latent_dim'])
     encoder.load_model(encoder_model_path, map_location=T.device('cuda'))
 
     with T.no_grad():  # Add this to prevent gradient computation for encoder
-        images = T.FloatTensor(features.astype(np.float32) / 255.0)
+        images = T.FloatTensor(images.astype(np.float32) / 255.0)
         if len(images.shape) == 3:
             images = images.unsqueeze(1)
         images = images.to(encoder.device)
 
         # Get encoded features
-        encoded_features, _, _  = encoder(images)
+        encoded_features, _, _, _  = encoder(images)
         # Detach to prevent backward through encoder
         encoded_features= encoded_features.detach()
 

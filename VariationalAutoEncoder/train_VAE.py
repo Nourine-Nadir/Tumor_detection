@@ -20,7 +20,7 @@ def train_AE(data,
         images = images.unsqueeze(1)  # Add channel dimension (B, 1, H, W)
 
     # Initialize the model, loss function, and optimizer
-    model = V_AutoEncoder(latent_dim=latent_dim, lr=lr)
+    model = V_AutoEncoder(input_size= images.shape[-1],latent_dim=latent_dim, lr=lr)
     if load_model:
         try:
             model.load_model(full_model_path,map_location=T.device('cuda'))
@@ -46,7 +46,7 @@ def train_AE(data,
             reconstruction_loss = model.criterion(outputs, inputs)
             kl_loss = model.kl_loss(mu, var)
 
-            loss = reconstruction_loss
+            loss = reconstruction_loss + 0.00001 *kl_loss
 
             # Backward pass and optimize
             model.optimizer.zero_grad()
