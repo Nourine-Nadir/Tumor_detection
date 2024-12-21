@@ -32,6 +32,6 @@ and v_parts are the number of horizontal and vertical segments, respectively.
 ## Auto Encoder  
 ### Train Auto Encoder
 ![Auto Encoder](AutoEncoder.png)
-### Train MLP 
+###  Train MLP 
 ![MLP](AutoEncoder_MLP.png)
 
