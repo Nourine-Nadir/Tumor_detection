@@ -1,4 +1,4 @@
-from models import V_AutoEncoder
+from models import AutoEncoder
 import torch as T
 from utils import *
 def test_AE(data,
@@ -6,7 +6,7 @@ def test_AE(data,
          encoder_model_path,
          full_model_path,
          ):
-    model = V_AutoEncoder(latent_dim=latent_dim)
+    model = AutoEncoder(latent_dim=latent_dim)
 
     model.load_model(full_model_path)
 
@@ -16,10 +16,10 @@ def test_AE(data,
             images = images.unsqueeze(1)
         images = images.cpu().detach().numpy()
 
-        outputs, _, _ = model(images)
-        outputs = outputs.cpu().detach().numpy()
+        outputs = model(images).cpu().detach().numpy()
 
-    nb_imgs = 6
+    nb_imgs = 5
     indices = np.random.choice(len(images), size=nb_imgs, replace=False)
+    print(f'generated images from indices {indices}')
     display_images(np.squeeze(images)[indices], rows=int(nb_imgs / 2), cols=2, title='Original Images')
     display_images(np.squeeze(outputs)[indices], rows=int(nb_imgs / 2), cols=2, title='Generated Images')
