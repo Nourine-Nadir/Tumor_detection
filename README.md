@@ -35,3 +35,13 @@ and v_parts are the number of horizontal and vertical segments, respectively.
 ###  Train MLP 
 ![MLP](Auto%20Encoder_MLP.png)
 
+# Model Accuracy Comparison
+
+| Model Name              | Dataset      | Accuracy | Precision | Recall |
+|-------------------------|--------------|----------|-----------|--------|
+| Naive model             | resized_Data | 97.48%   | 97.46%    | 97.36% |
+| Inception model         | resized_Data | 99.29%   | 99.21%    | 99.2%  |
+| AutoEncoder             | resized_Data | 99.65%   | 99.64%    | 99.61% |
+| Variational autoEncoder | resized_Data | 98.5%    | 98.5%     | 98.49% |
+| ViT                     | resized_Data | 97.83%   | 97.8%     | 96.9%  |
+
