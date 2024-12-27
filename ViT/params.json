@@ -18,17 +18,18 @@
     "display_images": false,
 
 
-    "emb_dim": 128,
+    "emb_dim": 256,
     "mlp_dim": 256,
-    "dropout": 0.2,
+    "dropout": 0.3,
 
     "patch_size": 16,
+
     "n_heads": 4,
     "n_layers": 8,
 
-    "lr": 1e-3,
-    "epochs": 30,
-    "batch_size": 256,
+    "lr": 5e-4,
+    "epochs": 50,
+    "batch_size": 512,
 
     "model_path":"models/ViT",
     "load_model":false,

@@ -131,7 +131,8 @@ class ViT(nn.Module):
                  n_layers: int = 1,
                  mlp_dim: int = 256,
                  dropout: float = 0.,
-                 out_dim: int = 2, ):
+                 out_dim: int = 2,
+                 hidden_dim=256):
         super().__init__()
         # Attr
         self.channels = in_channels
@@ -156,7 +157,7 @@ class ViT(nn.Module):
         # Learnable params
         num_patches = (img_size // patch_size) ** 2
         self.pos_embedding = nn.Parameter(
-            T.randn(1, num_patches + 1, emb_dim)  # + 1 for the cls_token
+            T.randn(self.channels, num_patches + 1, emb_dim)  # + 1 for the cls_token
         )
         # Classification token
         self.cls_token = nn.Parameter(T.rand(1, 1, emb_dim)).to(self.device)
@@ -168,7 +169,8 @@ class ViT(nn.Module):
                                        dropout=dropout).to(self.device)
         self.to_latent = nn.Identity().to(self.device)
 
-        self.head = nn.Linear(emb_dim, out_dim).to(self.device)
+        self.head1 = nn.Linear(emb_dim, hidden_dim).to(self.device)
+        self.head2 = nn.Linear(hidden_dim, out_dim).to(self.device)
 
         self.optimizer = T.optim.AdamW(self.parameters(), lr=lr)
         self.scheduler = T.optim.lr_scheduler.LambdaLR(
@@ -192,7 +194,8 @@ class ViT(nn.Module):
 
         x = self.to_latent(x)
 
-        x = self.head(x)
+        x = nn.functional.relu(self.head1(x))
+        x = self.head2(x)
         return x
 
     def save_model(self, path):
