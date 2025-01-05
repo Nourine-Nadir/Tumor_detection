@@ -3,10 +3,15 @@ import json
 import numpy as np
 from train import train
 from test import test
+from args_config import PARSER_CONFIG
+import sys
+import os
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from parser import Parser
 
 # HYPERPARAMETERS
-with (open('params.json', 'r') as f):
+with open('params.json', 'r') as f:
     params = json.load(f)["parameters"]
 
     ROOT_FOLDER, TARGET_FOLDER,\
@@ -17,6 +22,20 @@ with (open('params.json', 'r') as f):
     =(params[key] for key in
      list(params.keys())
      )
+
+
+try:
+    parser = Parser(prog='ViT model',
+                    description='ViT model training and testing program',
+                    )
+
+    args = parser.get_args(
+        PARSER_CONFIG
+    )
+
+    print([(key,value) for key, value in vars(args).items()])
+except ValueError as e:
+    print(e)
 
 if __name__ == '__main__':
 
@@ -38,8 +57,8 @@ if __name__ == '__main__':
         "n_layers": _n_layers,
         "out_dim": np.unique(y_train),
         "lr": _lr,
-        "epochs": _epochs,
-        "batch_size": _batch_size,
+        "epochs": args.epochs ,
+        "batch_size": args.batch_size ,
     }
 
     if _train:

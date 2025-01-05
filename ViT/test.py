@@ -1,9 +1,9 @@
 import torch as T
 import numpy as np
 from sklearn.model_selection import train_test_split
-from ViT.ViT_model import ViT
+from ViT_model import ViT
 from tqdm import tqdm
-from sklearn.metrics import confusion_matrix, f1_score, accuracy_score, roc_auc_score
+from sklearn.metrics import confusion_matrix, f1_score, accuracy_score, precision_score, recall_score
 import matplotlib.pyplot as plt
 import seaborn as sns
 def test(
@@ -52,7 +52,8 @@ def test(
 
     # Calculate f1score
     f1score = f1_score(labels_1D, all_preds_1D, average='macro')
-
+    precision = precision_score(labels_1D, all_preds_1D, average='macro')
+    recall = recall_score(labels_1D, all_preds_1D, average='macro')
 
 
     # Create and plot confusion matrix
@@ -68,5 +69,7 @@ def test(
     print(f"\nOverall Test Results:")
     print(f"Loss: {loss:.4f}")
     print(f"Accuracy: {accuracy:.4f}")
+    print(f"Precision: {precision:.4f}")
+    print(f"Recall: {recall:.4f}")
     print(f"f1_Score: {f1score:.4f}")
     return
