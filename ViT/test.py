@@ -7,7 +7,7 @@ from sklearn.metrics import confusion_matrix, f1_score, accuracy_score, precisio
 import matplotlib.pyplot as plt
 import seaborn as sns
 def test(
-        model,
+
         images,
         labels,
         config,
@@ -18,7 +18,20 @@ def test(
         images = T.FloatTensor(np.array(images).astype(np.float32) / 255.0)
     if len(images.shape) == 3 :
         images = T.unsqueeze(images, dim=1)
+    model = ViT(
+        lr=config['lr'],
+        in_channels=images.shape[1],
+        img_size=images.shape[-1],
+        patch_size=config['patch_size'],
+        emb_dim=config['emb_dim'],
+        n_heads=config['n_heads'],
+        n_layers=config['n_layers'],
+        mlp_dim=config['mlp_dim'],
+        dropout=config['dropout'],
+        out_dim=len(np.unique(labels)),
 
+    )
+    model.load_model(model_path+'best_model')
     DEVICE = model.device
     labels = T.tensor(np.array(labels), device=DEVICE, dtype=T.float32)
     print(type(images))

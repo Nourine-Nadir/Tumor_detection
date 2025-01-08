@@ -56,9 +56,9 @@ if __name__ == '__main__':
         "n_heads": _n_heads,
         "n_layers": _n_layers,
         "out_dim": np.unique(y_train),
-        "lr": _lr,
-        "epochs": args.epochs ,
-        "batch_size": args.batch_size ,
+        "lr": args.learning_rate ,
+        "epochs": args.epochs  ,
+        "batch_size": args.batch_size  ,
     }
 
     if _train:
@@ -72,7 +72,7 @@ if __name__ == '__main__':
 
     if _test:
         test(
-            model=model,
+
             images=test_images,
             labels=y_test,
             config=config,

@@ -29,6 +29,8 @@ def train(
         out_dim=len(np.unique(labels)),
 
     )
+    print(f'Verify args : epochs {config["epochs"]}')
+    print(f'Verify args : batch_size {config["batch_size"]}')
     if load_model:
         model.load_model(model_path)
 
@@ -83,7 +85,7 @@ def train(
 
         if avg_val_loss < best_loss:
             try :
-                model.save_model(model_path+ ' best_model')
+                model.save_model(model_path+ 'best_model')
                 print('New best model saved !')
                 best_model = model
                 best_loss = avg_val_loss
@@ -95,5 +97,5 @@ def train(
                   f' Validation Loss: {avg_val_loss:.6f},'
                   f'lr {model.get_lr():.5f}' )
 
-    model.save_model(model_path+ ' last_model')
+    model.save_model(model_path+ 'last_model')
     return best_model
